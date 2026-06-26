@@ -1,0 +1,20 @@
+{
+  "name": "agent-system-skills",
+  "owner": {
+    "name": "Agent System Skills",
+    "url": ""
+  },
+  "metadata": {
+    "description": "Agent 系统设计技能集——23 个可复用 agent / RAG 设计模式 skill"
+  },
+  "plugins": [
+    {
+      "name": "agent-system-skills",
+      "source": "./plugins/agent-system-skills",
+      "description": "Agent 系统设计技能集：22 个领域 skill + 1 个元 skill（using-agent-system-design），覆盖图工厂、ThreadState、中间件链、沙箱、Skill 系统、子代理、Memory、MCP、SSE 协议、运行调度、追踪、打包，以及企业级 RAG 知识库",
+      "version": "1.1.0",
+      "category": "agent-development",
+      "tags": ["agent", "langgraph", "sandbox", "mcp", "skill-system", "multi-agent", "sse", "rag", "knowledge-base"]
+    }
+  ]
+}

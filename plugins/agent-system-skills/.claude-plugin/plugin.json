@@ -1,0 +1,18 @@
+{
+  "name": "agent-system-skills",
+  "version": "1.1.0",
+  "description": "Agent 系统设计技能集，覆盖 22 个核心子系统的设计模式 + 1 个元 skill 作为路由入口，涵盖 agent 运行时、工具/沙箱、多代理、用户态系统、服务化、可观测、打包，以及企业级 RAG 知识库",
+  "keywords": [
+    "agent",
+    "langgraph",
+    "multi-agent",
+    "sandbox",
+    "skill-system",
+    "mcp",
+    "sse-streaming",
+    "rag",
+    "knowledge-base",
+    "vector-retrieval",
+    "hybrid-search"
+  ]
+}
