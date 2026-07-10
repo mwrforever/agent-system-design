@@ -19,19 +19,22 @@
 
 ## 包含的插件
 
-### `agent-system-skills` (v1.1.0)
+### `agent-system-skills` (v1.2.0)
 
-23 个 skill：
+28 个 skill：
 
-- **入口（元 skill）**：`using-agent-system-design` — 告诉 AI **何时该调用哪个领域 skill**
-- **领域 skill ×22**，分 7 簇：
+- **入口（元 skill + 端到端脊柱）**：
+  - `using-agent-system-design` — 告诉 AI **何时该调用哪个领域 skill**
+  - `e2e-request-lifecycle` — 端到端请求全链路脊柱（入站 → 认证 → 建图 → 中间件 → 执行 → 流式 → 渲染）
+- **领域 skill ×22**，分 7 簇（A–G）：
   - **A. 运行时与上下文 (5)**：`agent-graph-factory`、`thread-state-and-reducers`、`middleware-chain-design`、`system-prompt-template`、`context-window-management`
   - **B. 工具与执行 (3)**：`tool-assembly-and-policy`、`sandbox-abstraction`、`sandbox-tools-and-safety`
   - **C. 多代理与长任务 (3)**：`subagent-delegation`、`long-running-and-cancellation`、`safety-and-guardrails`
   - **D. 用户态系统 (3)**：`skill-system-design`、`memory-system-design`、`mcp-integration`
   - **E. 服务化与前端 (4)**：`gateway-runs-and-sse`、`frontend-streaming-protocol`、`multi-user-isolation`、`config-and-hot-reload`
-  - **F. 跨切 (3)**：`observability-tracing`、`harness-app-boundary`、`packaging-and-deployment`
+  - **F. 跨切 (3)**：`observability-tracing`、`core-app-boundary`、`packaging-and-deployment`
   - **G. 知识库基础设施 (1)**：`enterprise-rag-knowledge-base`
+- **平台维度 ×4（H 簇）**：`auth`（认证）、`scheduled-tasks`（定时任务）、`im-channels`（IM 渠道，含钉钉）、`frontend-app-design`（前端应用）
 
 ## 使用约定
 
@@ -48,12 +51,13 @@ md/skills/
 └── plugins/
     └── agent-system-skills/
         ├── .claude-plugin/plugin.json   # 插件元数据
+        ├── CONVENTIONS.md               # 共享约定：中立结构 + 匿名化映射 + skill 骨架
         ├── README.md                    # 插件说明 + 完整 skill 索引
         └── skills/
             ├── using-agent-system-design/
             │   ├── SKILL.md             # 元 skill
             │   └── references/          # 路由表扩展、术语表等
-            └── <22 个领域 skill>/
+            └── <其余 skill 目录>/
                 ├── SKILL.md
                 └── references/          # 详细落地代码、参数清单、外部链接
 ```

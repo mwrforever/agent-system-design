@@ -1,7 +1,7 @@
 {
   "name": "agent-system-skills",
-  "version": "1.1.0",
-  "description": "Agent 系统设计技能集，覆盖 22 个核心子系统的设计模式 + 1 个元 skill 作为路由入口，涵盖 agent 运行时、工具/沙箱、多代理、用户态系统、服务化、可观测、打包，以及企业级 RAG 知识库",
+  "version": "1.2.0",
+  "description": "Agent 系统设计技能集，共 28 个 skill：1 个元路由入口 + 1 个端到端请求全链路脊柱 + 22 个 organ skill（agent 运行时、工具/沙箱、多代理、用户态系统、服务化、可观测、打包、企业级 RAG）+ 4 个平台维度（认证 / 定时任务 / IM 渠道 / 前端应用）",
   "keywords": [
     "agent",
     "langgraph",
