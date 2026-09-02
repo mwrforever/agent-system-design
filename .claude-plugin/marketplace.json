@@ -2,19 +2,19 @@
   "name": "agent-system-skills",
   "owner": {
     "name": "Agent System Skills",
-    "url": ""
+    "url": "https://github.com/mwrforever/agent-system-design"
   },
   "metadata": {
-    "description": "Agent 系统设计技能集——23 个可复用 agent / RAG 设计模式 skill"
+    "description": "Agent 系统设计技能集——28 个可复用 agent / RAG 设计模式 skill，同时适配 zcode / Claude Code / Codex / Kimi Code / opencode"
   },
   "plugins": [
     {
       "name": "agent-system-skills",
       "source": "./plugins/agent-system-skills",
-      "description": "Agent 系统设计技能集：22 个领域 skill + 1 个元 skill（using-agent-system-design），覆盖图工厂、ThreadState、中间件链、沙箱、Skill 系统、子代理、Memory、MCP、SSE 协议、运行调度、追踪、打包，以及企业级 RAG 知识库",
-      "version": "1.1.0",
+      "description": "Agent 系统设计技能集，共 28 个 skill：1 个元路由入口（using-agent-system-design）+ 1 个端到端请求全链路脊柱（e2e-request-lifecycle）+ 22 个领域 skill（agent 运行时、工具/沙箱、多代理、用户态系统、服务化、可观测、打包、企业级 RAG）+ 4 个平台维度（认证 / 定时任务 / IM 渠道 / 前端应用）",
+      "version": "1.2.0",
       "category": "agent-development",
-      "tags": ["agent", "langgraph", "sandbox", "mcp", "skill-system", "multi-agent", "sse", "rag", "knowledge-base"]
+      "tags": ["agent", "langgraph", "sandbox", "mcp", "skill-system", "multi-agent", "sse", "rag", "knowledge-base", "authentication", "scheduled-tasks", "frontend"]
     }
   ]
 }

@@ -1,0 +1,22 @@
+{
+  "name": "agent-system-skills",
+  "version": "1.2.0",
+  "description": "Agent 系统设计技能集，共 28 个 skill：1 个元路由入口 + 1 个端到端请求全链路脊柱 + 22 个 organ skill（agent 运行时、工具/沙箱、多代理、用户态系统、服务化、可观测、打包、企业级 RAG）+ 4 个平台维度（认证 / 定时任务 / IM 渠道 / 前端应用）",
+  "author": {
+    "name": "mwrforever"
+  },
+  "keywords": [
+    "agent",
+    "langgraph",
+    "multi-agent",
+    "sandbox",
+    "skill-system",
+    "mcp",
+    "sse-streaming",
+    "rag",
+    "knowledge-base",
+    "vector-retrieval",
+    "hybrid-search"
+  ],
+  "skills": "skills"
+}

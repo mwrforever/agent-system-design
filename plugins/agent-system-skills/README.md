@@ -79,11 +79,15 @@ Agent 系统与 RAG 知识库的设计模式技能集，提炼自生产级 agent
 
 ## 安装
 
-```bash
-/plugin marketplace add <path-to-this-marketplace-dir>
-/plugin install agent-system-skills@agent-system-skills
-/reload-plugins
-```
+本插件同时适配五个运行时，清单见仓库根 README；各平台任选其一：
+
+| 运行时 | 安装入口 |
+|--------|----------|
+| zcode | Settings → Plugin Management → Discover → `+` 添加本仓库后安装（清单：`.zcode-plugin/plugin.json`） |
+| Claude Code | `/plugin marketplace add <仓库路径>` → `/plugin install agent-system-skills@agent-system-skills` |
+| Codex | `codex plugin marketplace add mwrforever/agent-system-design` → `codex plugin add agent-system-skills@agent-system-skills` |
+| Kimi Code | `/plugins install https://github.com/mwrforever/agent-system-design/tree/main/plugins/agent-system-skills`（清单：`kimi.plugin.json`） |
+| opencode | 仓库内运行自动加载，或执行根目录 `scripts/install-opencode.*` 全局安装 |
 
 ## 使用规则
 

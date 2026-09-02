@@ -1,8 +1,17 @@
 # Agent System Skills Marketplace
 
-一个多平台 Agent 技能市场，提供 Agent 系统与 RAG 知识库的设计模式技能集，同时支持 **Claude Code / Codex / opencode** 三个运行时。
+一个多平台 Agent 技能市场，提供 Agent 系统与 RAG 知识库的设计模式技能集，同时支持 **zcode / Claude Code / Codex / Kimi Code / opencode** 五个运行时。
 
 ## 安装方式
+
+### zcode
+
+zcode 原生兼容本仓库的市场与插件清单（清单探测优先级 `.zcode-plugin` > `.claude-plugin` > `.codex-plugin`）：
+
+- **方式一（市场安装，推荐）**：打开 zcode 的 **Settings → Plugin Management → Discover**，点 **`+`** 添加本仓库（本地路径 / GitHub 仓库 `mwrforever/agent-system-design` / Git URL 均可），然后安装其中的 `agent-system-skills` 插件。
+- **方式二（本地直装）**：在 Discover 的 `+` 中直接指向 `plugins/agent-system-skills` 目录（内含首选清单 `.zcode-plugin/plugin.json`）。
+
+安装后默认启用，在 **Settings → Skills** 或 `/` 菜单中应能看到 `agent-system-skills:*` 全部 28 个技能。
 
 ### Claude Code
 
@@ -33,6 +42,20 @@ codex plugin add agent-system-skills@agent-system-skills
 ```
 
 安装后技能以 `agent-system-skills:<技能名>` 命名空间暴露（如 `agent-system-skills:auth`）。
+
+### Kimi Code
+
+插件目录内置 Kimi 首选清单 `kimi.plugin.json`，并在仓库根目录提供自定义市场文件 `kimi-marketplace.json`：
+
+```bash
+# 方式一：直接从 GitHub 安装插件（支持 /tree/<ref> 钉住分支、tag 或 commit）
+/plugins install https://github.com/mwrforever/agent-system-design/tree/main/plugins/agent-system-skills
+
+# 方式二：添加自定义市场（传 kimi-marketplace.json 的本地路径或 URL），再在 Custom 页安装
+/plugins marketplace <path-or-url-to-this-repo>/kimi-marketplace.json
+```
+
+安装后在 `/plugins` 中确认插件已启用，执行 `/reload` 或开启新会话生效；技能通过 `/skill:<技能名>` 显式调用或由模型按需自动调用。
 
 ### opencode
 
@@ -71,15 +94,16 @@ codex plugin add agent-system-skills@agent-system-skills
 
 ## 使用约定
 
-- Claude Code 会扫描 `plugins/agent-system-skills/skills/*/SKILL.md` 注册技能；Codex 通过插件清单的 `skills: "./skills"` 声明注册；opencode 通过 `skills.paths` 扫描注册。
+- Claude Code 会扫描 `plugins/agent-system-skills/skills/*/SKILL.md` 注册技能；zcode 按 `.zcode-plugin` > `.claude-plugin` > `.codex-plugin` 优先级读取清单；Codex 通过插件清单的 `skills: "./skills"` 声明注册；Kimi Code 通过 `kimi.plugin.json` 的 `skills` 字段注册；opencode 通过 `skills.paths` 扫描注册。
 - 当用户提到「设计 agent 系统 / 中间件链 / 沙箱 / RAG …」时，AI **必须先调用** `using-agent-system-design`，再按指引激活具体领域 skill。
 - 每个 SKILL.md 保持轻量（100-300 行）：设计思想 + 实现模板 + 反模式 + 落地参考索引；额外的长材料放在该 skill 自己的 `references/` 子目录中。
 
 ## 目录结构
 
 ```
-md/skills/
-├── .claude-plugin/marketplace.json     # 市场元数据（Claude Code / Codex 通用）
+agent-system-design/
+├── .claude-plugin/marketplace.json     # 市场元数据（zcode / Claude Code / Codex 通用）
+├── kimi-marketplace.json               # Kimi Code 自定义市场文件
 ├── opencode.json                        # opencode 项目级 skills.paths 声明
 ├── README.md                            # 本文件
 ├── scripts/
@@ -87,8 +111,10 @@ md/skills/
 │   └── install-opencode.sh              # opencode 全局安装脚本（macOS / Linux）
 └── plugins/
     └── agent-system-skills/
+        ├── .zcode-plugin/plugin.json    # zcode 首选插件清单（探测优先级最高）
         ├── .codex-plugin/plugin.json    # Codex 插件清单（显式声明 skills 路径）
         ├── .claude-plugin/plugin.json   # Claude Code 插件元数据
+        ├── kimi.plugin.json             # Kimi Code 首选插件清单
         ├── CONVENTIONS.md               # 共享约定：中立结构 + 匿名化映射 + skill 骨架
         ├── README.md                    # 插件说明 + 完整 skill 索引
         └── skills/
