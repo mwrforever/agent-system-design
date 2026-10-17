@@ -1,0 +1,269 @@
+# `docker/docker-compose.yaml`
+
+> 逐字复制的真实源码（264 行），仅按品牌词映射表做机械替换；文件路径即真实仓库相对路径（品牌词替换后），结构、注释、逻辑零改动。
+
+```yaml
+# Helix Production Environment
+# Usage: make up
+#
+# Requires Docker Compose >= 2.24. ../.env and ../frontend/.env are gitignored,
+# so a fresh checkout has neither; the env_file entries below use the long-form
+# path/required syntax so Compose loads them when present instead of aborting
+# with "env file ... not found". Older clients reject this file with:
+#   services.<name>.env_file.0 must be a string
+#
+# Services:
+#   - nginx:       Reverse proxy (port 2026, configurable via PORT env var)
+#   - frontend:    Next.js production server
+#   - gateway:     FastAPI Gateway API + agent runtime
+#   - redis:       Redis Streams backend for cross-worker SSE stream bridge
+#   - provisioner: (optional) Sandbox provisioner for Kubernetes mode
+#
+# Key environment variables (set via environment/.env or scripts/deploy.sh):
+#   HELIX_PROJECT_ROOT           — project root for relative runtime paths
+#   HELIX_HOME                   — runtime data dir, default .helix under $HELIX_PROJECT_ROOT (or cwd)
+#   HELIX_CONFIG_PATH            — path to config.yaml
+#   HELIX_EXTENSIONS_CONFIG_PATH — path to extensions_config.json
+#   HELIX_SKILLS_PATH            — skills dir, default $HELIX_PROJECT_ROOT/skills
+#   HELIX_DOCKER_SOCKET          — Docker socket path for aio/DooD mode, default /var/run/docker.sock (used only by the opt-in docker-compose.dood.yaml overlay)
+#   HELIX_REPO_ROOT              — repo root (used for skills host path in DooD)
+#   BETTER_AUTH_SECRET               — required for frontend auth/session security
+#   HELIX_INTERNAL_AUTH_TOKEN    — shared internal Gateway auth token for multi-worker IM channels
+#   HELIX_CREDENTIALS_KEY        — at-rest Fernet key for stored credentials (deploy.sh persists it as $HELIX_HOME/.credentials_key)
+#
+# LangSmith tracing is disabled by default (LANGSMITH_TRACING=false).
+# Set LANGSMITH_TRACING=true and LANGSMITH_API_KEY in .env to enable it.
+#
+# Access: http://localhost:${PORT:-2026}
+
+services:
+  # ── Redis Stream Bridge ────────────────────────────────────────────────────
+  redis:
+    image: redis:7-alpine
+    container_name: helix-redis
+    command: ["redis-server", "--appendonly", "yes"]
+    volumes:
+      - redis-data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+    networks:
+      - helix
+    restart: unless-stopped
+
+  # ── Reverse Proxy ──────────────────────────────────────────────────────────
+  nginx:
+    image: nginx:alpine
+    container_name: helix-nginx
+    # Loopback-only by default: Helix's agent can execute commands, so the
+    # documented default deployment is a local trusted environment. A bare
+    # "${PORT}:2026" would bind 0.0.0.0 instead, which does not match that.
+    # Set BIND_HOST=0.0.0.0 only behind your own TLS/auth front door, and
+    # complete first-run setup before the host becomes reachable.
+    ports:
+      - "${BIND_HOST:-127.0.0.1}:${PORT:-2026}:2026"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf.template:ro
+    # Same launcher as the dev compose file and the Helm chart: nginx.conf
+    # listens on [::]:2026 as well, and on a host with IPv6 disabled that
+    # listen makes nginx exit at startup (socket() ... 97: Address family not
+    # supported by protocol), so the container restart-loops and `make up`
+    # never becomes healthy. Strip the IPv6 listen when the kernel has no
+    # IPv6, and exec nginx so it is PID 1 for signal handling.
+    command:
+      - sh
+      - -c
+      - |
+        set -e
+        cp /etc/nginx/nginx.conf.template /etc/nginx/nginx.conf
+        test -e /proc/net/if_inet6 || sed -i '/^[[:space:]]*listen[[:space:]]\+\[::\]:2026[[:space:]]/d' /etc/nginx/nginx.conf
+        exec nginx -g 'daemon off;'
+    depends_on:
+      frontend:
+        condition: service_started
+      gateway:
+        condition: service_healthy
+    networks:
+      - helix
+    restart: unless-stopped
+
+  # ── Frontend: Next.js Production ───────────────────────────────────────────
+  frontend:
+    build:
+      context: ../
+      dockerfile: frontend/Dockerfile
+      target: prod
+      args:
+        PNPM_STORE_PATH: ${PNPM_STORE_PATH:-/root/.local/share/pnpm/store}
+        NPM_REGISTRY: ${NPM_REGISTRY:-}
+    container_name: helix-frontend
+    environment:
+      - BETTER_AUTH_SECRET=${BETTER_AUTH_SECRET}
+      - HELIX_INTERNAL_GATEWAY_BASE_URL=http://gateway:8001
+    env_file:
+      - path: ../frontend/.env
+        required: false
+    networks:
+      - helix
+    restart: unless-stopped
+
+  # ── Gateway API ────────────────────────────────────────────────────────────
+  gateway:
+    build:
+      context: ../
+      dockerfile: backend/Dockerfile
+      args:
+        APT_MIRROR: ${APT_MIRROR:-}
+        UV_IMAGE: ${UV_IMAGE:-ghcr.io/astral-sh/uv:0.11.1}
+        UV_INDEX_URL: ${UV_INDEX_URL:-https://pypi.org/simple}
+        UV_EXTRAS: ${UV_EXTRAS:-}
+        NPM_REGISTRY: ${NPM_REGISTRY:-}
+        LARK_CLI_NPM_VERSION: ${LARK_CLI_NPM_VERSION:-1.0.65}
+    container_name: helix-gateway
+    # Gateway hosts the agent runtime (RunManager + StreamBridge) in process.
+    # Default to a single worker: GATEWAY_WORKERS > 1 is supported only with
+    # Postgres (database.backend: postgres, run_events.backend: db,
+    # run_ownership.heartbeat_enabled: true) and the Redis stream bridge wired
+    # below -- the Gateway refuses to start otherwise. IM channels, the WeChat
+    # QR login and browser tools stay worker-local, so keep one worker while
+    # they are enabled. --timeout-graceful-shutdown bounds how long open SSE
+    # connections may delay lifespan shutdown after SIGTERM; stop_grace_period
+    # below must cover that bound plus the lifespan's worst case: seven hooks
+    # bounded at 5s each (trash sweep, notification worker, channel service,
+    # scheduled task service, subagent batch service, browser sessions,
+    # MCP session pool), the 1s retrieval-warm wait, the 5s
+    # run drain and the 30s memory flush (memory.shutdown_flush_timeout_seconds)
+    # -- about 71s -- plus slack. backend/tests/_gateway_shutdown_budget.py
+    # pins the arithmetic.
+    command: sh -c "cd backend && PYTHONPATH=. exec uv run --no-sync uvicorn app.gateway.app:app --host 0.0.0.0 --port 8001 --workers ${GATEWAY_WORKERS:-1} --timeout-graceful-shutdown 10"
+    # Docker's 10s default SIGKILLed the 30s memory queue flush
+    # (memory.shutdown_flush_timeout_seconds) on every restart.
+    stop_grace_period: 90s
+    # `exec` in the command above lets the stop signal reach uvicorn: a `sh -c`
+    # that forks the server stays PID 1 with no SIGTERM handler, the kernel
+    # drops the signal, and the lifespan shutdown never runs; every stop then
+    # waits out stop_grace_period and ends in SIGKILL (#6835). `init` runs
+    # Docker's tini as PID 1: it forwards the signal to uv, which forwards it
+    # to uvicorn, and it reaps orphaned grandchildren, which `sh` used to do
+    # as a side effect of waiting.
+    init: true
+    volumes:
+      - ${HELIX_CONFIG_PATH}:/app/backend/config.yaml:ro
+      # Writable on purpose: the Gateway edits this file at runtime (MCP
+      # enable/disable, PUT/PATCH /api/mcp/config, skill updates). config.yaml
+      # above stays read-only because no API writes it.
+      - ${HELIX_EXTENSIONS_CONFIG_PATH}:/app/backend/extensions_config.json
+      - ../skills:/app/skills:ro
+      - ${HELIX_HOME}:/app/backend/.helix
+      # DooD: the host Docker socket is NOT mounted by default. It is added only
+      # for aio (pure-DooD) sandbox mode via the opt-in docker-compose.dood.yaml
+      # overlay (appended by scripts/deploy.sh). See backend/docs/CONFIGURATION.md
+      # Security Note section for details.
+       
+      # CLI auth dirs (Claude Code / Codex) are NOT mounted by default: they
+      # expose the entire ~/.claude and ~/.codex (history, projects, global
+      # config, credentials) into the container. Mount them only when you use
+      # the Claude/Codex CLI login as a model provider or ACP agent, via the
+      # opt-in docker-compose.cli-auth.yaml overlay. Prefer an env token
+      # (CLAUDE_CODE_OAUTH_TOKEN, see .env.example / backend/docs/CONFIGURATION.md).
+    working_dir: /app
+    environment:
+      - CI=true
+      - HELIX_PROJECT_ROOT=/app
+      - HELIX_HOME=/app/backend/.helix
+      - HELIX_CONFIG_PATH=/app/backend/config.yaml
+      - HELIX_EXTENSIONS_CONFIG_PATH=/app/backend/extensions_config.json
+      - HELIX_STREAM_BRIDGE_REDIS_URL=${HELIX_STREAM_BRIDGE_REDIS_URL:-redis://redis:6379/0}
+      - HELIX_CHANNELS_LANGGRAPH_URL=${HELIX_CHANNELS_LANGGRAPH_URL:-http://gateway:8001/api}
+      - HELIX_CHANNELS_GATEWAY_URL=${HELIX_CHANNELS_GATEWAY_URL:-http://gateway:8001}
+      - HELIX_INTERNAL_AUTH_TOKEN=${HELIX_INTERNAL_AUTH_TOKEN}
+      # At-rest key for stored credentials (scripts/deploy.sh resolves or generates it).
+      # Empty falls back to .credentials_key in the runtime home mounted above.
+      - HELIX_CREDENTIALS_KEY=${HELIX_CREDENTIALS_KEY:-}
+      # DooD path/network translation
+      - HELIX_HOST_BASE_DIR=${HELIX_HOME}
+      - HELIX_SANDBOX_HOST=host.docker.internal
+      # The login lockout counts failures per client IP, but every browser
+      # request reaches the Gateway from nginx. Trust nginx's X-Real-IP (it
+      # overwrites the header on every Gateway route) so one client's wrong
+      # passwords cannot lock everyone out. Hostname, re-resolved every 10s.
+      # `:-` on purpose: an empty value also means nginx, because every browser
+      # request arrives through it, so direct mode would only bring back the
+      # shared lockout. Set another list in .env to change whom to trust.
+      - AUTH_TRUSTED_PROXIES=${AUTH_TRUSTED_PROXIES:-nginx}
+      # Proxy values (HTTP_PROXY/HTTPS_PROXY/ALL_PROXY) are inherited from ../.env via env_file.
+      # Only NO_PROXY is declared here so internal service hostnames are always exempt from the proxy.
+      - NO_PROXY=${NO_PROXY:-}${NO_PROXY:+,}localhost,127.0.0.1,::1,gateway,frontend,nginx,provisioner,openviking,host.docker.internal
+      - no_proxy=${no_proxy:-}${no_proxy:+,}localhost,127.0.0.1,::1,gateway,frontend,nginx,provisioner,openviking,host.docker.internal
+    env_file:
+      - path: ../.env
+        required: false
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    depends_on:
+      redis:
+        condition: service_healthy
+    healthcheck:
+      # /health/ready runs its probes (database, checkpointer, Redis stream
+      # bridge, provisioner) concurrently within a 3s endpoint deadline; the
+      # client timeout must stay above that bound. The gateway is unhealthy
+      # while Redis is unreachable; the provisioner verdict is report-only.
+      test: ["CMD", "python", "-c", "import urllib.request; response = urllib.request.urlopen('http://127.0.0.1:8001/health/ready', timeout=5); raise SystemExit(0 if response.status == 200 else 1)"]
+      interval: 5s
+      timeout: 5s
+      retries: 30
+      start_period: 20s
+    networks:
+      - helix
+    restart: unless-stopped
+
+  # ── Sandbox Provisioner (optional, Kubernetes mode) ────────────────────────
+  provisioner:
+    build:
+      context: ./provisioner
+      dockerfile: Dockerfile
+      args:
+        APT_MIRROR: ${APT_MIRROR:-}
+        PIP_INDEX_URL: ${PIP_INDEX_URL:-}
+    container_name: helix-provisioner
+    volumes:
+      - ~/.kube/config:/root/.kube/config:ro
+    environment:
+      - K8S_NAMESPACE=helix
+      - SANDBOX_IMAGE=enterprise-public-cn-beijing.cr.volces.com/vefaas-public/all-in-one-sandbox:latest
+      # Optional lark-cli init image (Pattern A). Empty ⇒ legacy runtime mount.
+      # Set to a published tag (e.g. helix/lark-cli-init:v1.0.65) to provision
+      # the sandbox lark-cli runtime via an init container + emptyDir.
+      - LARK_CLI_INIT_IMAGE=${LARK_CLI_INIT_IMAGE:-}
+      # Optional lark-cli broker image (Pattern B, issue #4338). When set, the
+      # sandbox gets a shim + broker sidecar that holds the credentials, so the
+      # plaintext config/data are never mounted into the sandbox. Supersedes
+      # LARK_CLI_INIT_IMAGE when both are set. Empty ⇒ broker off.
+      - LARK_CLI_BROKER_IMAGE=${LARK_CLI_BROKER_IMAGE:-}
+      - THREADS_HOST_PATH=${HELIX_HOME}/threads
+      - HELIX_HOST_BASE_DIR=${HELIX_HOME}
+      - KUBECONFIG_PATH=/root/.kube/config
+      - NODE_HOST=host.docker.internal
+      - K8S_API_SERVER=https://host.docker.internal:26443
+    env_file:
+      - path: ../.env
+        required: false
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    networks:
+      - helix
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8002/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 6
+volumes:
+  redis-data:
+
+networks:
+  helix:
+    driver: bridge
+```

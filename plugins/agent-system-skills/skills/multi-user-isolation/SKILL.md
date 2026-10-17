@@ -1,187 +1,77 @@
 ---
 name: multi-user-isolation
-description: 设计 agent 系统的多用户隔离--get_effective_user_id 三级解析链 + per-user 物理目录（uploads/workspace/outputs/memory/agents）+ 内部 Token + X-Owner-User-Id 头 + owner 检查（防枚举）+ orphan 迁移（default 桶 -> 真实 user）+ user_context contextvar 全链路传播。链路位置 ②认证（跨切不变量 2：user_id 全链路隔离）。当你要做 per-user 分桶、加 owner 校验、排查"串用户"或 per-user 目录落错桶、从无认证升级到带认证做数据迁移时调用本 skill。
+description: 多用户数据隔离链路：user_context contextvar 身份传播与三源归一（LangGraph config/context/auth）、get_effective_user_id 兜底（无认证落 default 桶）、Paths 路径安全（thread/user/integration/project id 校验防穿越 + 按用户分桶）、secret_context 密钥提取/脱敏与斜杠技能 owner-token 隔离、run 来源标记契约。当平台从单用户转多用户、排查"用户串数据/串记忆/串技能"、设计身份在异步任务间的传播时使用。
 ---
+
+# 多用户隔离
 
 ## 何时用
 
-- agent 系统服务多个用户（公司内部 / 公网 / SaaS），要 memory / sandbox / uploads / agents 严格按用户分桶
-- 排查"串用户"（per-user 目录落到错的桶 / 一律落到 default 桶）
-- 接入 IM 通道（飞书 / Slack / Telegram），平台 user_id 与系统 user_id 需解耦
-- 想从"无认证 -> 启用认证"平滑升级，旧 default 桶数据迁移到真实 user
-- 加内部 Token + owner 头，让 channel worker / scheduler 代表用户发起请求
-- 给 thread / run 路由加 owner 校验，防 thread_id 枚举攻击
+- 单用户系统改多用户：身份如何贯穿全链路
+- 排查"用户 A 看到用户 B 的数据/记忆/技能/沙箱"
+- 异步 worker（调度器/渠道/子代理）里身份如何恢复
+- 密钥与 owner-token 的隔离
 
 ## 设计方案（为什么这么设计）
 
-### 核心定位：跨切不变量 2 的"隔离执行层"
+### 1. 身份三源归一
 
-[[e2e-request-lifecycle]] 定义 3 个跨切不变量，其中**不变量 2：user_id 全链路隔离**要求 ②认证 解析出的 user_id 在 ③–⑧ 全链路驱动 per-user 资源分桶。本 skill 是该不变量的**执行层**--[[auth]] 负责"凭证来源 -> 一个 user"（②认证 的前半跳），本 skill 负责"这个 user 如何落到物理目录、如何防越权、如何迁移遗留数据"。
+`runtime/user_context.py`（295 行）：
+- `set_current_user` / `get_current_user` / `require_current_user`：contextvar 传播（同请求内隐式可用，异步任务边界显式携带）
+- `resolve_user_id`：**三源归一**——LangGraph `config`（configurable/context 注入）→ `runtime` 对象 → 认证态；`get_effective_user_id()` 兜底：无认证模式落 `default` 桶（而不是散落到根目录）
 
-**与 [[auth]] 的边界**：auth 讲**认证**（你是谁、cookie / JWT / 内部 Token 怎么解析、contextvar 怎么写、token 吊销、CSRF）；本 skill 讲**隔离**（同一个 user_id 如何分桶到 uploads / workspace / outputs / memory / agents、owner 检查如何防枚举、orphan 如何迁移）。两者共享 `user_context` contextvar 与 `set_current_user` 入口，但职责不重叠。
+任何存储取数前先过归一函数——散落的 `user_id or "default"` 判断是串数据的头号来源。
 
-### 核心矛盾：单点解析 vs 跨边界丢失
+### 2. 路径即边界
 
-业务代码需要"一个函数拿到当前 user_id"用于路径分桶；但 `ContextVar` 是 **task-local**（非 thread-local），跨三类边界会丢失：
+`config/paths.py`（556 行）：所有宿主路径由 `Paths` 类统一派生；`thread_id` / `user_id` / `integration_id` / `project_id` **入路径前强制校验**（防路径穿越——`../` 或分隔符注入把 A 的 id 变成 B 的目录）。目录结构按域分桶：
 
-1. 请求返回后的后台工具执行（worker pool 不 `copy_context`）
-2. 子线程 / Timer（不继承 asyncio task context）
-3. 跨进程（未来 driver）
-
-### 解法：三级解析链 + 三态 sentinel
-
-```python
-# 伪代码：get_effective_user_id 用于文件系统分桶（永不抛，总有桶）
-def get_effective_user_id() -> str:
-    user = _current_user.get()                          # task-local contextvar
-    return str(user.id) if user else DEFAULT_USER_ID    # "default" 兜底
-
-# resolve_runtime_user_id 用于工具 / 中间件（跨边界权威）
-def resolve_runtime_user_id(runtime) -> str:
-    ctx = getattr(runtime, "context", None) or {}
-    if isinstance(ctx, dict) and ctx.get("user_id"):    # 1) runtime.context（跨边界存活）
-        return str(ctx["user_id"])
-    return get_effective_user_id()                      # 2) contextvar -> 3) "default" 兜底
-
-# resolve_user_id 用于 repository（三态 sentinel）
-def resolve_user_id(value, *, method_name):
-    if isinstance(value, _AutoSentinel):                # AUTO（默认）：读 contextvar，无则抛 RuntimeError
-        return str(require_current_user().id)
-    return value                                        # 显式 str 覆盖；显式 None 绕过过滤（迁移专用）
+```
+<helix_home>/threads/{thread_id}/{workspace,uploads,outputs}
+<helix_home>/users/{user_id}/{skills,memory,mcp,...}
 ```
 
-**分工**：文件系统路径用 `get_effective_user_id()`（永不抛，总有桶）；repository 用 `resolve_user_id(AUTO)`（无 user 抛错，防止静默泄漏）；工具 / 中间件用 `resolve_runtime_user_id(runtime)`（优先 `runtime.context["user_id"]`，跨边界存活）。
+消费方（技能存储、记忆后端、个人 MCP、沙箱挂载、上传）全部走 Paths，不自拼路径。
 
-### 关键不变量（违反则串用户或泄漏）
+### 3. 密钥上下文与 owner-token
 
-1. **user_id 全链路隔离**（跨切不变量 2）：②认证 写 contextvar -> ③路由 owner 检查 -> ④建图 -> ⑤中间件（ThreadDataMiddleware 按 user_id 建目录）-> ⑥执行（工具按 user_id 读写）-> ⑦流式。任何一跳读到的 user_id 必须一致。
-2. **`runtime.context["user_id"]` 优先于 contextvar**：后台工具执行时 contextvar 可能已丢，`inject_authenticated_user_context` 在请求期把 user_id 盖章进 `config["context"]`，worker 透传到 `ToolRuntime.context`，工具必须读这条而非 contextvar。
-3. **user_id 消毒后才进路径**：外部 id（IM `open_id` / Telegram 负数 chat id）含 `_` `/` 等路径危险字符，`make_safe_user_id` 限定 `[A-Za-z0-9_-]` 并加 digest 后缀防碰撞。
-4. **owner 检查返回 404 而非 403**：不存在 / 不属于自己一律 404，隐藏存在性差异，防枚举。
-5. **内部 owner 头仅在 `INTERNAL_SYSTEM_ROLE` 下生效**：泄漏的内部 Token 不能授予跨用户线程访问；header 仅在 AuthMiddleware 校验内部 Token 后信任。
-6. **orphan（NULL user_id）行宽松、缺行分语义、异主严格 404**：`check_access` 对 NULL owner / 缺行（读语义）返回 True（向后兼容遗留数据），仅异主返回 False；destructive 路由用 `require_existing=True` 让缺行也拒。
+`runtime/secret_context.py`（248 行）：
+- 密钥提取/脱敏：进入日志与错误信息的密钥先剥离
+- **斜杠技能 owner-token 隔离**：技能激活携带的敏感 token 只对该 owner 生效，跨 owner 的 run 拿不到
 
-### per-user 目录模板
+### 4. 来源标记
 
-```python
-# 伪代码：单一 Paths 类算所有 user-scoped 路径，改一处全链路跟
-# {base_dir}/users/{user_id}/
-#   ├── memory.json
-#   ├── agents/{name}/{config.yaml, SOUL.md, memory.json}
-#   ├── skills/custom/{name}/
-#   └── threads/{thread_id}/user-data/{workspace,uploads,outputs}   # 挂载为 /mnt/user-data/
-def thread_dir(thread_id, user_id=None):
-    if user_id is not None:
-        return base_dir / "users" / _validate_user_id(user_id) / "threads" / _validate_thread_id(thread_id)
-    return base_dir / "threads" / _validate_thread_id(thread_id)     # 遗留布局（迁移前）
-```
+`runtime/run_origin.py` + `contracts/thread_origin_contract.json`：每个 run/thread 记录来源（extension / github / im_channel / mcp_notification / schedule）。非交互来源的 run 天然受限（见 [[e2e-request-lifecycle]] 信任边界），审计时能回答"这个动作是谁发起的"。
 
-`ThreadDataMiddleware` 在 `before_agent` 调 `get_effective_user_id()` 拿 user_id -> `Paths.sandbox_work_dir(thread_id, user_id=...)` 算三个目录 -> 懒初始化只算路径、按需 `mkdir`。base_dir 解析优先级：构造参数 -> `HELIX_HOME` env -> `{project_root}/.helix`。
+### 5. 异步边界的身份恢复
 
-### IM 通道：内部 Token + owner 头（②认证 的 IM 入站路径）
-
-```python
-# 伪代码：channel worker 代表 owner 发请求
-def _owner_headers(msg):
-    owner = _effective_owner_user_id(msg)       # 已绑定 -> connection owner；未绑定 -> 平台 user_id
-    return create_internal_auth_headers(owner_user_id=owner)
-    # -> {"X-Helix-Internal-Token": <token>, "X-Helix-Owner-User-Id": owner}
-
-# AuthMiddleware 侧：校验内部 Token 后，synthetic user.id = make_safe_user_id(owner)
-# -> get_effective_user_id() 返回 owner -> per-user 目录正确分桶（不落 default）
-```
-
-`_channel_storage_user_id` 是 IM 入站的**单一真相源**：run 身份与文件暂存桶用同一 helper，避免"agent 读 `users/{safe}/...` 但文件落到 `users/default/...`"（dispatcher task 的 contextvar 未设 -> default 兜底）。该 helper 与 `_owner_headers` 有意不同：前者是进程内、已消毒、文件系统面向的 id；后者发原始 owner id 让 gateway 重新解析。
-
-### owner 检查在端到端链路中的位置（②认证 -> ③路由）
-
-`@require_permission("threads", "read", owner_check=True)` 装饰器在 ③路由 层校验 path 参数 `thread_id`；stateless run 端点（thread_id 在 body 不在 path，装饰器拿不到）在 `start_run` 内显式 `check_access`。两处都支持内部 owner 头二次校验：首检失败 + `INTERNAL_SYSTEM_ROLE` -> 用 `X-Helix-Owner-User-Id` 头的 owner 再查一次（channel worker 代表 owner），而非绕过检查。
+调度器、IM 渠道、子代理、MCP 任务 worker 都在请求上下文之外跑：身份经内部令牌（[[auth]]）或 config 注入显式携带，进 worker 后先 `set_current_user` 再干活——忘了这步，worker 里的所有"当前用户"读取都会落 default 桶。
 
 ## 实现索引
 
-### 文件清单（自定结构映射）
-
-| 自定路径 | 真实职责 | references/code 模块 |
+| 文件 | 行数 | 职责 |
 |---|---|---|
-| `core/helix/runtime/user_context.py` | contextvar + `get_effective_user_id` / `set_current_user` / `resolve_runtime_user_id` / `AUTO` 三态 sentinel / `CurrentUser` Protocol | [user-context.md](./references/code/user-context.md) |
-| `core/helix/config/paths.py` + `core/helix/config/runtime_paths.py` + `core/helix/agents/middlewares/thread_data_middleware.py` | per-user 目录模板 + `make_safe_user_id` 消毒 + base_dir 解析 + ThreadDataMiddleware 建目录 | [thread-data-and-paths.md](./references/code/thread-data-and-paths.md) |
-| `gateway/gateway/internal_auth.py` + `gateway/gateway/authz.py` + `gateway/gateway/auth_middleware.py` + `core/helix/persistence/thread_meta/sql.py` + `gateway/gateway/services.py` | 内部 Token + owner 头 + owner 检查装饰器 + `check_access` 三态语义 + AuthMiddleware 写 contextvar + `inject_authenticated_user_context` | [owner-check-and-internal-auth.md](./references/code/owner-check-and-internal-auth.md) |
-| `scripts/migrate_user_isolation.py` | 一次性迁移：遗留 threads / agents / skills / memory -> per-user 布局，无主数据归 `--user-id`（默认 default） | [orphan-migration.md](./references/code/orphan-migration.md) |
+| `references/code/backend/packages/harness/helix/runtime/user_context.py` | 295 | 身份传播与三源归一 |
+| `references/code/backend/packages/harness/helix/runtime/secret_context.py` | 248 | 密钥提取/脱敏/owner-token 隔离 |
+| `references/code/backend/packages/harness/helix/runtime/run_origin.py` | 80 | 来源标记 |
+| `references/code/backend/packages/harness/helix/config/paths.py` | 556 | 路径派生 + id 校验 + 分桶 |
+| `references/code/contracts/thread_origin_contract.json` | 12 | 来源词表 |
 
-### 模块入口与索引
-
-**user_context（contextvar 基座）**（完整源码见 [user-context.md](./references/code/user-context.md)）：
-- `_current_user: ContextVar` task-local；`set_current_user` 返回 token，`finally` 里 `reset_current_user` 复位。
-- `get_effective_user_id()`：文件系统分桶用，永不抛，无 user 返 `"default"`。
-- `resolve_runtime_user_id(runtime)`：工具 / 中间件用，优先 `runtime.context["user_id"]`（跨边界存活）-> contextvar -> `"default"`。
-- `resolve_user_id(value)` + `AUTO` sentinel：repository 用，三态（AUTO 读 contextvar 无则抛 / 显式 str 覆盖 / 显式 None 绕过）。
-- `CurrentUser` Protocol（结构类型，`.id: str`）：persistence 层不 import 具体 User 类，避免框架层反向依赖应用层。
-
-**文件系统隔离**（完整源码见 [thread-data-and-paths.md](./references/code/thread-data-and-paths.md)）：
-- `Paths.user_dir / user_memory_file / user_agents_dir / user_agent_dir / user_skills_dir / user_custom_skills_dir / thread_dir / sandbox_work_dir / sandbox_uploads_dir / sandbox_outputs_dir`：全 per-user。
-- `make_safe_user_id(raw)`：unsafe 字符替换为 `-`，加 SHA-256 digest 后缀防碰撞；`prepare_user_dir_for_raw_id` 检测旧 SHA-1 桶并 rename 迁移。
-- `_validate_user_id` / `_validate_thread_id`：正则 `^[A-Za-z0-9_-]+$` 防 `..` 越权。
-- `ThreadDataMiddleware.before_agent`：`get_effective_user_id()` -> 算三目录 -> 懒初始化只算路径 / 急初始化 `mkdir` + `chmod 0o777`（沙箱容器不同 UID 可写）。
-- `runtime_home()`：base_dir 解析，`HELIX_HOME` env -> `{project_root}/.helix`。
-
-**owner 检查 + 内部 Token**（完整源码见 [owner-check-and-internal-auth.md](./references/code/owner-check-and-internal-auth.md)）：
-- `AuthMiddleware.dispatch`：校验内部 Token / cookie JWT / auth-disabled -> `request.state.user` + `set_current_user(user)` 写 contextvar，`finally` `reset_current_user` 复位。
-- `get_internal_user(owner_user_id)`：synthetic user，`.id = make_safe_user_id(owner)`，`system_role="internal"`；无 owner 则 `.id = "default"`。
-- `get_trusted_internal_owner_user_id(request)`：仅 `system_role==internal` 时信任 `X-Helix-Owner-User-Id` 头。
-- `require_permission(..., owner_check=True, require_existing=?)`：`check_access` 失败 + internal 角色 -> 用 owner 头二次校验；仍失败 -> 404。
-- `ThreadMetaRepository.check_access`：缺行返 `not require_existing`；NULL user_id 返 True（遗留共享）；异主返 False。
-- `inject_authenticated_user_context`：请求期把 user_id 盖章进 `config["context"]`（`setdefault` 让服务端认证 id 覆盖客户端传入），worker 透传，工具跨边界可读。
-
-**orphan 迁移**（完整源码见 [orphan-migration.md](./references/code/orphan-migration.md)）：
-- `migrate_thread_dirs`：查 `threads_meta` 建 `thread_id -> user_id` owner_map，遗留 `threads/{id}/` -> `users/{owner}/threads/{id}/`，冲突移 `migration-conflicts/`。
-- `migrate_agents` / `migrate_skills` / `migrate_memory`：遗留全局 agents / skills / memory.json -> `users/{user_id}/...`，默认 `--user-id default`。
-- 幂等：再跑无遗留目录即 no-op；空遗留目录清理；无主线程归 default 并告警。
+分桶消费方：[[skill-system-design]]（user 技能）、[[memory-system-design]]（owner 记忆）、[[mcp-integration]]（个人 MCP）、[[sandbox-abstraction]]（沙箱归属）。
 
 ## 反模式与陷阱
 
-- ❌ 子线程 / Timer / worker 直接 `get_effective_user_id()` -> contextvar 不可见，串到 default 桶。修复：用 `resolve_runtime_user_id(runtime)` 读 `runtime.context["user_id"]`（由 `inject_authenticated_user_context` 预盖）。
-- ❌ 路由不做 owner 检查，依赖 thread_id 不可枚举 -> ID 泄露后任意用户跨读。修复：`@require_permission(owner_check=True)`；stateless run 端点在 `start_run` 内显式 `check_access`。
-- ❌ 物理目录用 `f"data/{user_id}/..."`，user_id 未消毒 -> `../../etc/passwd` 越权。修复：`make_safe_user_id` + `_validate_user_id` 正则限定。
-- ❌ 内部 owner 头任何路径都信 -> 内网横向时被滥用。修复：仅 `INTERNAL_SYSTEM_ROLE` 下信任（AuthMiddleware 先校验内部 Token）。
-- ❌ thread 不存在返 403（vs 不属于自己）-> 攻击者枚举存在的 thread_id。修复：一律 404。
-- ❌ IM channel run 身份与文件暂存桶用不同 helper -> agent 读 `users/{safe}/...` 但文件落 `users/default/...`（dispatcher contextvar 未设）。修复：`_channel_storage_user_id` 单一真相源。
-- ❌ `check_access` 对缺行 strict-allow -> 已删线程被另一用户 re-target（delete 幂等跨用户漏洞）。修复：destructive 路由用 `require_existing=True`。
-- ❌ repository `user_id=AUTO` 在无 contextvar 的迁移脚本里调用 -> 抛 RuntimeError。修复：迁移脚本传 `user_id=None` 显式绕过。
-- ❌ `make_safe_user_id` 换 digest 算法（SHA-1 -> SHA-256）不迁移旧桶 -> 同一用户两份目录。修复：`prepare_user_dir_for_raw_id` 检测旧桶并 rename。
+- ❌ 各处自行 `user_id or "default"` → 归一口径漂移；统一 resolve_user_id。
+- ❌ id 直接拼路径 → 穿越/串桶；Paths 校验后派生。
+- ❌ worker 里不恢复身份 → default 桶串数据；入口 set_current_user。
+- ❌ 技能 token 不分 owner → 跨用户凭证借用；owner-token 隔离。
+- ❌ 来源不标记 → 审计与信任边界失效；run_origin 契约。
 
-## 落地参考（自测 / 调参 / 调试）
+## 落地参考
 
-**调参旋钮**
-
-| 旋钮 | 来源 | 说明 |
-|---|---|---|
-| `DEFAULT_USER_ID` | `user_context.py` 常量 `"default"` | 无 user 兜底桶；迁移脚本 `--user-id` 默认值 |
-| `HELIX_INTERNAL_AUTH_TOKEN` | env | 内部 Token；未设则进程启动生成随机 token（`secrets.token_urlsafe(32)`） |
-| `HELIX_HOME` / `HELIX_HOST_BASE_DIR` / `HELIX_PROJECT_ROOT` | env | base_dir / Docker 挂载宿主路径 / 项目根 |
-| `ThreadDataMiddleware(lazy_init=...)` | factory 构造 | True 只算路径（默认）；False 急建目录 |
-| `require_permission(require_existing=...)` | 装饰器参数 | False 缺行宽松（读）；True 缺行拒（删 / 改） |
-| `_SAFE_USER_ID_DIGEST_HEX_LEN` | `paths.py` 常量 `16` | `make_safe_user_id` 防碰撞 digest 后缀长度 |
-
-**关键日志串**
-
-- `Migrated thread %s -> user %s` - orphan 线程迁移成功
-- `Conflict for thread %s: moved to %s` - 迁移冲突（目标已存在）
-- `%d thread(s) had no owner and were assigned to 'default'` - 无主线程归 default
-- `Migrated legacy unsafe-id user directory to the current digest format` - SHA-1 -> SHA-256 桶迁移
-- `Thread %s not found` - owner 检查失败（404，防枚举）
-- `repository accessed without user context` - AUTO 但无 contextvar（RuntimeError）
-
-**自测方向**
-
-- **三级解析**：mock contextvar 未设，`get_effective_user_id()` 返 `"default"`；`resolve_user_id(AUTO)` 抛 RuntimeError；`resolve_runtime_user_id(runtime)` 读 `runtime.context["user_id"]` 优先于 contextvar。
-- **per-user 分桶**：mock 两个 user_id，断言 `sandbox_work_dir(uid_a, tid)` != `sandbox_work_dir(uid_b, tid)`，且都在 `users/{uid}/threads/{tid}/` 下。
-- **路径越权**：`user_id="../../etc"` -> `_validate_user_id` 抛 ValueError；`make_safe_user_id("ou_abc/def")` 产出 `[A-Za-z0-9_-]` 字符集且两次调用稳定。
-- **owner 防枚举**：异主 thread `GET /threads/{tid}` 返 404；缺行（遗留）读返 200 但 `DELETE` 返 404（`require_existing=True`）；NULL owner 行任意用户可读。
-- **内部 owner 头**：无内部 Token 的请求带 `X-Helix-Owner-User-Id` -> 头被忽略（`get_trusted_internal_owner_user_id` 返 None）；有内部 Token -> `get_effective_user_id()` 返 `make_safe_user_id(owner)`。
-- **orphan 迁移幂等**：跑两次，第二次无遗留目录 -> no-op；冲突目录移到 `migration-conflicts/`；无主线程归 default。
-- **IM 单一真相源**：channel run 的 `runtime.context["user_id"]` == 文件暂存桶 user_id（都来自 `_channel_storage_user_id`），不出现 default 串桶。
+**自测方向**：`user_id="../other"` 被路径校验拒绝；两个用户各自 resolve 后落到不同桶目录；调度器触发的 run 内 `get_current_user` 是配置的 owner 而非 default；密钥不出现于日志。
 
 ## 进一步阅读
 
-- 完整源码：[references/code/user-context.md](./references/code/user-context.md) / [thread-data-and-paths.md](./references/code/thread-data-and-paths.md) / [owner-check-and-internal-auth.md](./references/code/owner-check-and-internal-auth.md) / [orphan-migration.md](./references/code/orphan-migration.md)
-- 关联 skill：[[auth]]（②认证 前半跳：凭证 -> user，contextvar 写入入口），[[e2e-request-lifecycle]]（跨切不变量 2 全链路推导），[[memory-system-design]]（per-user `memory.json`），[[sandbox-abstraction]]（per-user `/mnt/user-data` 挂载），[[im-channels]]（IM 入站 owner 解析与 `_channel_storage_user_id`），[[gateway-runs-and-sse]]（`start_run` owner 检查），[[skill-system-design]]（per-user custom skills 目录）
+- [[auth]]（身份的源头）、[[e2e-request-lifecycle]]（run-context 信任边界）
+- [[workspace-and-projects]]（线程目录的实际使用方）

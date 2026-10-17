@@ -5,7 +5,7 @@
     {
       "id": "agent-system-skills",
       "displayName": "Agent System Skills",
-      "description": "Agent 系统设计技能集：1 个元路由入口 + 1 个端到端请求全链路脊柱 + 22 个领域 skill + 4 个平台维度，覆盖图工厂、ThreadState、中间件链、沙箱、Skill 系统、子代理、Memory、MCP、SSE 协议、运行调度、追踪、打包、企业级 RAG 知识库、认证、定时任务、IM 渠道与前端应用",
+      "description": "Agent 系统设计技能集（33 个 skill）：元路由入口 + 端到端请求脊柱 + 31 个领域 skill，references 为 988 个源码文件逐字复制（约 26.2 万行），覆盖图工厂、ThreadState、中间件链、沙箱、技能系统、子代理、记忆、MCP、SSE、扩展插件、持久层、模型工厂、工作区、搜索集成、追踪、打包、知识检索、认证、定时任务、IM 渠道与前端。",
       "source": "./plugins/agent-system-skills"
     }
   ]

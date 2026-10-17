@@ -1,6 +1,6 @@
 # Agent System Skills Marketplace
 
-一个多平台 Agent 技能市场，提供 Agent 系统与 RAG 知识库的设计模式技能集，同时支持 **zcode / Claude Code / Codex / Kimi Code / opencode** 五个运行时。
+一个多平台 Agent 技能市场，提供生产级 Agent 系统的设计模式技能集，同时支持 **zcode / Claude Code / Codex / Kimi Code / opencode** 五个运行时。
 
 ## 安装方式
 
@@ -11,7 +11,7 @@ zcode 原生兼容本仓库的市场与插件清单（清单探测优先级 `.zc
 - **方式一（市场安装，推荐）**：打开 zcode 的 **Settings → Plugin Management → Discover**，点 **`+`** 添加本仓库（本地路径 / GitHub 仓库 `mwrforever/agent-system-design` / Git URL 均可），然后安装其中的 `agent-system-skills` 插件。
 - **方式二（本地直装）**：在 Discover 的 `+` 中直接指向 `plugins/agent-system-skills` 目录（内含首选清单 `.zcode-plugin/plugin.json`）。
 
-安装后默认启用，在 **Settings → Skills** 或 `/` 菜单中应能看到 `agent-system-skills:*` 全部 28 个技能。
+安装后默认启用，在 **Settings → Skills** 或 `/` 菜单中应能看到 `agent-system-skills:*` 全部 33 个技能。
 
 ### Claude Code
 
@@ -69,34 +69,33 @@ codex plugin add agent-system-skills@agent-system-skills
 ./scripts/install-opencode.sh
 ```
 
-脚本将技能目录合并进 `~/.config/opencode/opencode.json` 的 `skills.paths`（幂等可重复执行），完成后**重启 opencode** 生效。验证：`opencode debug skill` 中应出现 28 个技能，location 指向本仓库 `plugins/agent-system-skills/skills/`。
+脚本将技能目录合并进 `~/.config/opencode/opencode.json` 的 `skills.paths`（幂等可重复执行），完成后**重启 opencode** 生效。验证：`opencode debug skill` 中应出现 33 个技能，location 指向本仓库 `plugins/agent-system-skills/skills/`。
 
 > 注意：若 `~/.config/opencode/skills/` 下已手动安装过同名旧副本，opencode 会以全局副本为准（同名去重）。建议删除旧副本或保持两边同步。
 
 ## 包含的插件
 
-### `agent-system-skills` (v1.2.0)
+### `agent-system-skills` (v1.3.0)
 
-28 个 skill：
+**33 个 skill**，references 含 **988 个源码文件的逐字复制（约 26.2 万行）**——完整复刻一个生产级 super-agent 平台的全部能力面，仅做品牌词机械匿名化（见 `CONVENTIONS.md`）。
 
 - **入口（元 skill + 端到端脊柱）**：
-  - `using-agent-system-design` — 告诉 AI **何时该调用哪个领域 skill**
-  - `e2e-request-lifecycle` — 端到端请求全链路脊柱（入站 → 认证 → 建图 → 中间件 → 执行 → 流式 → 渲染）
-- **领域 skill ×22**，分 7 簇（A–G）：
-  - **A. 运行时与上下文 (5)**：`agent-graph-factory`、`thread-state-and-reducers`、`middleware-chain-design`、`system-prompt-template`、`context-window-management`
-  - **B. 工具与执行 (3)**：`tool-assembly-and-policy`、`sandbox-abstraction`、`sandbox-tools-and-safety`
-  - **C. 多代理与长任务 (3)**：`subagent-delegation`、`long-running-and-cancellation`、`safety-and-guardrails`
-  - **D. 用户态系统 (3)**：`skill-system-design`、`memory-system-design`、`mcp-integration`
-  - **E. 服务化与前端 (4)**：`gateway-runs-and-sse`、`frontend-streaming-protocol`、`multi-user-isolation`、`config-and-hot-reload`
-  - **F. 跨切 (3)**：`observability-tracing`、`core-app-boundary`、`packaging-and-deployment`
-  - **G. 知识库基础设施 (1)**：`enterprise-rag-knowledge-base`
-- **平台维度 ×4（H 簇）**：`auth`（认证）、`scheduled-tasks`（定时任务）、`im-channels`（IM 渠道，含钉钉）、`frontend-app-design`（前端应用）
+  - `using-agent-system-design` — 能力地图与路由（何时调用哪个领域 skill）
+  - `e2e-request-lifecycle` — 端到端请求全链路（入口 → 认证 → 路由 → run 编排 → 执行 → SSE → 前端）
+- **A. 运行时与上下文 (5)**：`agent-graph-factory`、`middleware-chain-design`、`system-prompt-template`、`thread-state-and-reducers`、`context-window-management`
+- **B. 工具与执行 (3)**：`tool-assembly-and-policy`、`sandbox-abstraction`、`sandbox-tools-and-safety`
+- **C. 多代理与长任务 (2)**：`subagent-delegation`、`long-running-and-cancellation`
+- **D. 用户态系统 (3)**：`skill-system-design`、`memory-system-design`、`mcp-integration`
+- **E. 平台边界 (5)**：`auth`、`safety-and-guardrails`、`multi-user-isolation`、`config-and-hot-reload`、`observability-tracing`
+- **F. 服务化 (3)**：`gateway-runs-and-sse`、`im-channels`（10 平台）、`scheduled-tasks`
+- **G. 前端 (2)**：`frontend-app-design`、`frontend-streaming-protocol`
+- **H. 交付与基础设施 (8)**：`packaging-and-deployment`、`core-app-boundary`（含嵌入式客户端与 TUI）、`extension-plugin-system`、`persistence-layer`、`model-provider-factory`、`workspace-and-projects`、`web-search-integrations`、`enterprise-rag-knowledge-base`
 
 ## 使用约定
 
 - Claude Code 会扫描 `plugins/agent-system-skills/skills/*/SKILL.md` 注册技能；zcode 按 `.zcode-plugin` > `.claude-plugin` > `.codex-plugin` 优先级读取清单；Codex 通过插件清单的 `skills: "./skills"` 声明注册；Kimi Code 通过 `kimi.plugin.json` 的 `skills` 字段注册；opencode 通过 `skills.paths` 扫描注册。
 - 当用户提到「设计 agent 系统 / 中间件链 / 沙箱 / RAG …」时，AI **必须先调用** `using-agent-system-design`，再按指引激活具体领域 skill。
-- 每个 SKILL.md 保持轻量（100-300 行）：设计思想 + 实现模板 + 反模式 + 落地参考索引；额外的长材料放在该 skill 自己的 `references/` 子目录中。
+- 每个 SKILL.md 保持轻量（100-300 行，硬上限 500）：设计决策（只断言源码可佐证的事实）+ 实现索引 + 反模式 + 落地参考；完整源码逐字复制在各 skill 的 `references/code/` 下（路径即真实仓库相对路径）。
 
 ## 目录结构
 
@@ -115,20 +114,18 @@ agent-system-design/
         ├── .codex-plugin/plugin.json    # Codex 插件清单（显式声明 skills 路径）
         ├── .claude-plugin/plugin.json   # Claude Code 插件元数据
         ├── kimi.plugin.json             # Kimi Code 首选插件清单
-        ├── CONVENTIONS.md               # 共享约定：中立结构 + 匿名化映射 + skill 骨架
+        ├── CONVENTIONS.md               # 共享约定 v2：逐字复制铁律 + 匿名化映射表 + skill 骨架
         ├── README.md                    # 插件说明 + 完整 skill 索引
-        └── skills/
-            ├── using-agent-system-design/
-            │   ├── SKILL.md             # 元 skill
-            │   └── references/          # 路由表扩展、术语表等
-            └── <其余 skill 目录>/
-                ├── SKILL.md
-                └── references/          # 详细落地代码、参数清单、外部链接
+        └── skills/                      # 33 个 skill
+            └── <skill-name>/
+                ├── SKILL.md             # 设计决策 + 实现索引（精简）
+                └── references/code/     # 真实源码逐字复制（路径 = 仓库相对路径）
 ```
 
 ## SKILL.md 体例
 
-每个 SKILL.md 遵守：
-- ≤ 300 行；超长内容拆到同目录 `references/<topic>.md`，由 SKILL.md 索引引用
-- 6 个固定段：何时用 / 设计思想 / 实现模板 / 反模式 / 落地参考 / 进一步阅读
-- 代码示例使用通用栈（Python + LangGraph + TypeScript），不引用任何具体项目内文件路径
+每个 SKILL.md 遵守（详见 `CONVENTIONS.md`）：
+
+- ≤ 500 行硬上限；6 个固定段：何时用 / 设计方案（为什么这么设计）/ 实现索引 / 反模式与陷阱 / 落地参考 / 进一步阅读
+- **references 为逐字复制的真实源码**（仅品牌词机械替换），实现索引中的每个路径都真实存在于 `references/code/`
+- 设计方案只断言源码可佐证的事实（函数/常量/顺序以源码为准）

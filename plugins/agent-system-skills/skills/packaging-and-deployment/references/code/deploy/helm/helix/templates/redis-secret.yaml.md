@@ -1,0 +1,49 @@
+# `deploy/helm/helix/templates/redis-secret.yaml`
+
+> 逐字复制的真实源码（44 行），仅按品牌词映射表做机械替换；文件路径即真实仓库相对路径（品牌词替换后），结构、注释、逻辑零改动。
+
+```yaml
+{{- /*
+  Redis Secret — holds the stream-bridge URL (key `redis-url`) and, in bundled
+  mode with a password, the redis AUTH password (key `redis-password`).
+
+  Created when the chart owns the credentials:
+    • bundled mode  (redis.enabled=true)                              → builds DSN from in-cluster Service
+    • external mode with redis.external.redisUrl set                  → wraps the URL verbatim
+  NOT created when the user manages the Secret themselves:
+    • redis.external.existingSecret OR redis.existingSecret           → referenced only
+
+  Auth: empty `redis.auth.password` (default) = no auth, matching the compose
+  deployment (ClusterIP isolation only). Set a password to enable ACL/AUTH;
+  the DSN then becomes redis://:<password>@host:6379/0.
+*/ -}}
+{{- $userSecret := or .Values.redis.external.existingSecret .Values.redis.existingSecret -}}
+{{- $wrapExternal := and (not .Values.redis.enabled) .Values.redis.external.redisUrl -}}
+{{- if and (not $userSecret) (or .Values.redis.enabled $wrapExternal) -}}
+{{- $password := .Values.redis.auth.password -}}
+{{- $dsn := "" -}}
+{{- if .Values.redis.enabled -}}
+{{- /* bundled: DSN points at the in-cluster Service */ -}}
+{{- $auth := ternary (printf ":%s@" (include "helix.urlEscape" $password)) "" (ne $password "") -}}
+{{- $dsn = printf "redis://%s%s:6379/0" $auth (include "helix.redisFullname" .) -}}
+{{- else -}}
+{{- /* external: user-supplied URL, verbatim */ -}}
+{{- $dsn = .Values.redis.external.redisUrl -}}
+{{- end -}}
+apiVersion: v1
+kind: Secret
+metadata:
+  name: {{ include "helix.redisUrlSecret" . }}
+  namespace: {{ include "helix.namespace" . }}
+  labels:
+    {{- include "helix.labels" . | nindent 4 }}
+    app.kubernetes.io/component: redis
+type: Opaque
+stringData:
+  redis-url: {{ $dsn | quote }}
+  {{- if and .Values.redis.enabled $password }}
+  # AUTH password for the bundled redis StatefulSet (REDIS_PASSWORD).
+  redis-password: {{ $password | quote }}
+  {{- end }}
+{{- end -}}
+```
