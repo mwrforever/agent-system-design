@@ -19,7 +19,7 @@
   "skills": "./skills/",
   "interface": {
     "displayName": "Agent System Skills",
-    "shortDescription": "Agent 系统与 RAG 知识库设计模式技能集（28 个 skill）",
+    "shortDescription": "Agent 系统与 RAG 知识库设计模式技能集（33 个 skill）",
     "longDescription": "覆盖 agent 运行时与上下文（图工厂 / ThreadState / 中间件链 / 系统提示词 / 上下文窗口）、工具与沙箱、多代理与长任务、Skill 与 Memory 系统、MCP 集成、网关与 SSE 流式协议、多用户隔离、配置热重载、可观测追踪、核心边界、打包部署、企业级 RAG 知识库，以及认证 / 定时任务 / IM 渠道 / 前端应用四个平台维度。入口元 skill：using-agent-system-design。",
     "developerName": "mwrforever",
     "websiteURL": "https://github.com/mwrforever/agent-system-design"
