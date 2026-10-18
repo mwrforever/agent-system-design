@@ -43,13 +43,13 @@ description: 线程工作区与项目资料体系：上传安全（文件名规�
 
 | 文件 | 行数 | 职责 |
 |---|---|---|
-| `references/code/backend/packages/harness/helix/uploads/manager.py` + `companions.py` | 766+116 | 上传安全 |
-| `references/code/backend/packages/harness/helix/workspace_changes/{scanner,diff,recorder,api,types}.py` | 397/221/239/80/117 | 变更追踪 |
-| `references/code/backend/packages/harness/helix/projects/{documents,context,summaries,trash,tools}.py` | 643/332/369/336/209 | 项目资料 |
-| `references/code/backend/packages/harness/helix/storage/{contract,manager}.py` + `backends/local_fs/local_fs_store.py` | 198/223/260 | blob 抽象 |
-| `references/code/backend/packages/harness/helix/utils/{atomic_write,file_io,file_conversion,host_paths}.py` | 46/109/239/60 | 原子写/文件线程池/转换 |
-| `references/code/backend/app/gateway/routers/{uploads,artifacts,projects,project_documents,project_thread_files,trash}.py` + `artifact_archive.py` | 510/624/214/505/160/244+270 | HTTP 面 |
-| `references/code/backend/packages/harness/helix/config/{projects,blob_storage,tool_artifact,agent_storage}_config.py` | 158/120/38/38 | 配置 |
+| `references/code/uploads/manager.py` + `companions.py` | 766+116 | 上传安全 |
+| `references/code/workspace_changes/{scanner,diff,recorder,api,types}.py` | 397/221/239/80/117 | 变更追踪 |
+| `references/code/projects/{documents,context,summaries,trash,tools}.py` | 643/332/369/336/209 | 项目资料 |
+| `references/code/storage/{contract,manager}.py` + `backends/local_fs/local_fs_store.py` | 198/223/260 | blob 抽象 |
+| `references/code/utils/{atomic_write,file_io,file_conversion,host_paths}.py` | 46/109/239/60 | 原子写/文件线程池/转换 |
+| `references/code/app/gateway/routers/{uploads,artifacts,projects,project_documents,project_thread_files,trash}.py` + `artifact_archive.py` | 510/624/214/505/160/244+270 | HTTP 面 |
+| `references/code/config/{projects,blob_storage,tool_artifact,agent_storage}_config.py` | 158/120/38/38 | 配置 |
 
 ## 反模式与陷阱
 

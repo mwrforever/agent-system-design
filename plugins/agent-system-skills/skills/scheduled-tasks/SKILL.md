@@ -47,16 +47,16 @@ description: 定时任务全链路：schedules 纯计算（cron/once/interval + 
 
 | 文件 | 行数 | 职责 |
 |---|---|---|
-| `references/code/backend/packages/harness/helix/scheduler/schedules.py` + `stop_rule.py` + `runtime.py` | 107/37/31 | 纯计算/停止条件/能力开关 |
-| `references/code/backend/app/scheduler/service.py` | 1288 | 轮询器 |
-| `references/code/backend/app/scheduler/{notification_delivery,notification_text}.py` | 446/359 | 投递/文本 |
-| `references/code/backend/packages/harness/helix/runtime/goal.py` | 869 | goal 评估循环 |
-| `references/code/backend/packages/harness/helix/persistence/scheduled_tasks/sql.py` | 1021 | 任务仓库（配额/租约） |
-| `references/code/backend/packages/harness/helix/persistence/scheduled_task_runs/sql.py` | 1134 | 运行仓库（单活跃约束） |
-| `references/code/backend/packages/harness/helix/tools/scheduled_tasks.py` | 185 | schedule_task/stop 工具 |
-| `references/code/backend/app/gateway/routers/scheduled_tasks.py` + `scheduled_task_access.py` + `scheduled_task_validation.py` + `scheduled_task_errors.py` | 513/688/375/136 | API/访问控制/校验/错误码 |
+| `references/code/scheduler/schedules.py` + `stop_rule.py` + `runtime.py` | 107/37/31 | 纯计算/停止条件/能力开关 |
+| `references/code/app/scheduler/service.py` | 1288 | 轮询器 |
+| `references/code/app/scheduler/{notification_delivery,notification_text}.py` | 446/359 | 投递/文本 |
+| `references/code/runtime/goal.py` | 869 | goal 评估循环 |
+| `references/code/persistence/scheduled_tasks/sql.py` | 1021 | 任务仓库（配额/租约） |
+| `references/code/persistence/scheduled_task_runs/sql.py` | 1134 | 运行仓库（单活跃约束） |
+| `references/code/tools/scheduled_tasks.py` | 185 | schedule_task/stop 工具 |
+| `references/code/app/gateway/routers/scheduled_tasks.py` + `scheduled_task_access.py` + `scheduled_task_validation.py` + `scheduled_task_errors.py` | 513/688/375/136 | API/访问控制/校验/错误码 |
 | `references/code/contracts/{scheduled_goal_notes,scheduled_task_errors,thread_goal}_contract.json` | 44/56/44 | 冻结词表 |
-| `references/code/frontend/src/core/scheduled-tasks/{cron,goal-outcome,events}.ts` | 695/244/484 | 前端语义 |
+| `references/code/frontend/core/scheduled-tasks/{cron,goal-outcome,events}.ts` | 695/244/484 | 前端语义 |
 
 ## 反模式与陷阱
 

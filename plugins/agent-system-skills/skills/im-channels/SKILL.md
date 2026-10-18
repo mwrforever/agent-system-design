@@ -53,7 +53,7 @@ description: IM 渠道接入体系：Channel(ABC) 抽象（start/stop/send + 可
 
 ## 实现索引
 
-`references/code/backend/app/channels/`（42 文件 23190 行，整目录）+ 关联：
+`references/code/app/channels/`（42 文件 23190 行，整目录）+ 关联：
 
 | 关键文件 | 行数 | 职责 |
 |---|---|---|

@@ -42,16 +42,16 @@ description: 企业知识检索接入的真实形态：RetrievalProvider 协议 
 
 | 文件 | 行数 | 职责 |
 |---|---|---|
-| `references/code/backend/packages/harness/helix/knowledge/contract.py` | 123 | 协议 + 能力位 + 数据类型 |
-| `references/code/backend/packages/harness/helix/knowledge/providers.py` | 106 | 解析 + 能力协商 + search_provider |
-| `references/code/backend/packages/harness/helix/knowledge/sources.py` | 155 | 引用格式化/脱敏/裁剪 |
-| `references/code/backend/packages/harness/helix/knowledge/tools.py` | 75 | knowledge_search 工具 |
-| `references/code/backend/packages/harness/helix/knowledge_scope.py` | 194 | scope 语义（三模式） |
-| `references/code/backend/packages/harness/helix/mcp_scope.py` | 95 | MCP 侧 scope 对偶 |
-| `references/code/backend/packages/harness/helix/community/ragflow/tools.py` + `client.py` | 653+206 | RAGFlow 适配 |
-| `references/code/backend/packages/harness/helix/community/lightrag/tools.py` + `client.py` | 178+169 | LightRAG 适配 |
+| `references/code/knowledge/contract.py` | 123 | 协议 + 能力位 + 数据类型 |
+| `references/code/knowledge/providers.py` | 106 | 解析 + 能力协商 + search_provider |
+| `references/code/knowledge/sources.py` | 155 | 引用格式化/脱敏/裁剪 |
+| `references/code/knowledge/tools.py` | 75 | knowledge_search 工具 |
+| `references/code/knowledge_scope.py` | 194 | scope 语义（三模式） |
+| `references/code/mcp_scope.py` | 95 | MCP 侧 scope 对偶 |
+| `references/code/community/ragflow/tools.py` + `client.py` | 653+206 | RAGFlow 适配 |
+| `references/code/community/lightrag/tools.py` + `client.py` | 178+169 | LightRAG 适配 |
 | `references/code/contracts/knowledge_sources.v1.json` | 35 | 引用信封契约 |
-| `references/code/backend/app/gateway/routers/knowledge.py` + `knowledge_scope_admission.py` | 112+141 | 能力面 API + scope 准入 |
+| `references/code/app/gateway/routers/knowledge.py` + `knowledge_scope_admission.py` | 112+141 | 能力面 API + scope 准入 |
 
 ## 反模式与陷阱
 

@@ -48,17 +48,17 @@ description: 前端流式订阅与 SSE 归一化：getAPIClient SDK 单例（CSR
 
 | 文件 | 行数 | 职责 |
 |---|---|---|
-| `references/code/frontend/src/core/api/api-client.ts` | 649 | SDK 单例 + 三补丁 |
-| `references/code/frontend/src/core/api/fetcher.ts` + `errors.ts` + `stream-mode.ts` | 139/124/112 | 通用 fetch（CSRF/401）/错误面/流模式 |
-| `references/code/frontend/src/core/threads/hooks.ts` | 4039 | useThreadStream 等全部流 hook |
-| `references/code/frontend/src/core/threads/stream-state.ts` | 173 | 增量归约 |
-| `references/code/frontend/src/core/threads/message-order.ts` | 453 | 顺序恢复纯函数 |
-| `references/code/frontend/src/core/threads/{activity,api,types,token-usage,utils,origin}.ts` | 411/242/127/47/180/125 | 会话域 |
-| `references/code/frontend/src/core/messages/{utils,human-input,usage-model,usage,derived-state}.ts` | 1358/588/440/156/225 | 消息域 |
-| `references/code/frontend/src/core/tasks/**`（9 文件） | 1011 | 子任务时间线 |
-| `references/code/frontend/src/core/citations/sources.ts` | 265 | 证据解析 |
-| `references/code/frontend/src/components/workspace/messages/*.tsx`（5 组件） | 1699+1327+838+342+301 | 渲染组件 |
-| `references/code/frontend/src/core/streamdown/{preprocess,plugins}.ts` | 390+269 | Markdown 流式预处理 |
+| `references/code/frontend/core/api/api-client.ts` | 649 | SDK 单例 + 三补丁 |
+| `references/code/frontend/core/api/fetcher.ts` + `errors.ts` + `stream-mode.ts` | 139/124/112 | 通用 fetch（CSRF/401）/错误面/流模式 |
+| `references/code/frontend/core/threads/hooks.ts` | 4039 | useThreadStream 等全部流 hook |
+| `references/code/frontend/core/threads/stream-state.ts` | 173 | 增量归约 |
+| `references/code/frontend/core/threads/message-order.ts` | 453 | 顺序恢复纯函数 |
+| `references/code/frontend/core/threads/{activity,api,types,token-usage,utils,origin}.ts` | 411/242/127/47/180/125 | 会话域 |
+| `references/code/frontend/core/messages/{utils,human-input,usage-model,usage,derived-state}.ts` | 1358/588/440/156/225 | 消息域 |
+| `references/code/frontend/core/tasks/**`（9 文件） | 1011 | 子任务时间线 |
+| `references/code/frontend/core/citations/sources.ts` | 265 | 证据解析 |
+| `references/code/frontend/components/workspace/messages/*.tsx`（5 组件） | 1699+1327+838+342+301 | 渲染组件 |
+| `references/code/frontend/core/streamdown/{preprocess,plugins}.ts` | 390+269 | Markdown 流式预处理 |
 
 ## 反模式与陷阱
 

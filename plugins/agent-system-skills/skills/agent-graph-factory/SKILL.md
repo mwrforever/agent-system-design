@@ -65,16 +65,16 @@ description: LangGraph agent 的图工厂与装配设计：make_lead_agent（Lan
 
 | 文件 | 行数 | 职责 |
 |---|---|---|
-| `references/code/backend/packages/harness/helix/agents/lead_agent/agent.py` | 1445 | make_lead_agent / assemble_lead_agent / build_middlewares / _get_runtime_config / INVARIANT 注释 |
-| `references/code/backend/packages/harness/helix/agents/factory.py` | 547 | create_helix_agent / _assemble_from_features / _insert_extra 锚点解析 |
-| `references/code/backend/packages/harness/helix/agents/features.py` | 70 | RuntimeFeatures + Next/Prev 装饰器（纯数据类） |
-| `references/code/backend/packages/harness/helix/agents/assembly_descriptor.py` | 508 | 装配描述符投影 |
-| `references/code/backend/packages/harness/helix/agents/interaction_policy.py` | 182 | 交互策略（澄清/确认门） |
-| `references/code/backend/packages/harness/helix/agents/human_input.py` | 125 | 人类输入处理 |
-| `references/code/backend/packages/harness/helix/agents/__init__.py` | 50 | make_lead_agent 懒注册 + 技能缓存预热 |
-| `references/code/backend/app/gateway/routers/agents.py` | 844 | 自定义 agent CRUD/版本导入导出 |
-| `references/code/backend/app/gateway/routers/assistants_compat.py` | 152 | LangGraph assistants 兼容面 |
-| `references/code/backend/langgraph.json` | — | 图注册入口 |
+| `references/code/agents/lead_agent/agent.py` | 1445 | make_lead_agent / assemble_lead_agent / build_middlewares / _get_runtime_config / INVARIANT 注释 |
+| `references/code/agents/factory.py` | 547 | create_helix_agent / _assemble_from_features / _insert_extra 锚点解析 |
+| `references/code/agents/features.py` | 70 | RuntimeFeatures + Next/Prev 装饰器（纯数据类） |
+| `references/code/agents/assembly_descriptor.py` | 508 | 装配描述符投影 |
+| `references/code/agents/interaction_policy.py` | 182 | 交互策略（澄清/确认门） |
+| `references/code/agents/human_input.py` | 125 | 人类输入处理 |
+| `references/code/agents/__init__.py` | 50 | make_lead_agent 懒注册 + 技能缓存预热 |
+| `references/code/app/gateway/routers/agents.py` | 844 | 自定义 agent CRUD/版本导入导出 |
+| `references/code/app/gateway/routers/assistants_compat.py` | 152 | LangGraph assistants 兼容面 |
+| `references/code/langgraph.json` | — | 图注册入口 |
 
 ## 反模式与陷阱
 

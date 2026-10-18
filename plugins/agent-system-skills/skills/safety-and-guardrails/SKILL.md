@@ -48,15 +48,15 @@ description: 工具调用安全体系：三层授权（Layer1 装配期过滤 + 
 
 | 文件 | 行数 | 职责 |
 |---|---|---|
-| `references/code/backend/packages/harness/helix/authz/tool_filter.py` + `enforcement.py` | 72+82 | Layer1 一站式入口 |
-| `references/code/backend/packages/harness/helix/authz/rbac.py` | 280 | RBAC provider |
-| `references/code/backend/packages/harness/helix/authz/skill_filter.py` / `sandbox_authz.py` / `plugin_authz.py` | 237/187/398 | 技能/沙箱/插件授权 |
-| `references/code/backend/packages/harness/helix/authz/{provider,principal,adapter,outcome,runtime,plugin_targets,activation_decisions}.py` | — | 协议/身份/桥接/结果 |
-| `references/code/backend/packages/harness/helix/guardrails/middleware.py` | 279 | Layer2 调用前判定 |
-| `references/code/backend/packages/harness/helix/guardrails/typesafe.py` + `typesafe/client.py` + `connection.py` | 433+556+279 | 远程策略引擎 |
-| `references/code/backend/packages/harness/helix/agents/middlewares/{input_sanitization,pii_redaction,read_before_write}_middleware.py` | 506+551+563 | 内容安全三件套 |
-| `references/code/backend/app/gateway/authz.py` | 1080 | 网关侧 Permissions/require_permission/模型授权/沙箱授权 |
-| `references/code/backend/packages/harness/helix/config/{authorization,guardrails,pii_redaction,verification,read_before_write}_config.py` | — | 配置段 |
+| `references/code/authz/tool_filter.py` + `enforcement.py` | 72+82 | Layer1 一站式入口 |
+| `references/code/authz/rbac.py` | 280 | RBAC provider |
+| `references/code/authz/skill_filter.py` / `sandbox_authz.py` / `plugin_authz.py` | 237/187/398 | 技能/沙箱/插件授权 |
+| `references/code/authz/{provider,principal,adapter,outcome,runtime,plugin_targets,activation_decisions}.py` | — | 协议/身份/桥接/结果 |
+| `references/code/guardrails/middleware.py` | 279 | Layer2 调用前判定 |
+| `references/code/guardrails/typesafe.py` + `typesafe/client.py` + `connection.py` | 433+556+279 | 远程策略引擎 |
+| `references/code/agents/middlewares/{input_sanitization,pii_redaction,read_before_write}_middleware.py` | 506+551+563 | 内容安全三件套 |
+| `references/code/app/gateway/authz.py` | 1080 | 网关侧 Permissions/require_permission/模型授权/沙箱授权 |
+| `references/code/config/{authorization,guardrails,pii_redaction,verification,read_before_write}_config.py` | — | 配置段 |
 
 ## 反模式与陷阱
 

@@ -42,13 +42,13 @@ LangGraph 默认通道是 Last-Write-Wins。一次 step 里工具结果、中间
 
 | 文件 | 行数 | 职责 |
 |---|---|---|
-| `references/code/backend/packages/harness/helix/agents/thread_state.py` | 563 | ThreadState/DeltaThreadState/全部 reducer/schema 工厂 |
-| `references/code/backend/packages/harness/helix/agents/goal_state.py` | 46 | goal 状态枚举与归约 |
-| `references/code/backend/packages/harness/helix/agents/task_continuity/archive.py` | 245 | 跨 run 任务档案 |
-| `references/code/backend/packages/harness/helix/agents/task_continuity/state.py` | 103 | 连续性通道 |
-| `references/code/backend/packages/harness/helix/agents/task_continuity/tools.py` | 166 | 连续性工具 |
-| `references/code/backend/packages/harness/helix/runtime/checkpoint_state.py` | 219 | 检查点访问器与变更图 |
-| `references/code/backend/packages/harness/helix/checkpoint_patches.py` | 125 | saver 缺陷修补 |
+| `references/code/agents/thread_state.py` | 563 | ThreadState/DeltaThreadState/全部 reducer/schema 工厂 |
+| `references/code/agents/goal_state.py` | 46 | goal 状态枚举与归约 |
+| `references/code/agents/task_continuity/archive.py` | 245 | 跨 run 任务档案 |
+| `references/code/agents/task_continuity/state.py` | 103 | 连续性通道 |
+| `references/code/agents/task_continuity/tools.py` | 166 | 连续性工具 |
+| `references/code/runtime/checkpoint_state.py` | 219 | 检查点访问器与变更图 |
+| `references/code/checkpoint_patches.py` | 125 | saver 缺陷修补 |
 | `references/code/contracts/thread_goal_contract.json` | 44 | goal 外显契约 |
 
 ## 反模式与陷阱

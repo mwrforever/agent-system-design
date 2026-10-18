@@ -36,13 +36,13 @@ description: 可观测体系：tracing 工厂（Langfuse/LangSmith 回调统一�
 
 | 文件 | 行数 | 职责 |
 |---|---|---|
-| `references/code/backend/packages/harness/helix/tracing/factory.py` + `metadata.py` + `monocle.py` | 65+114+69 | 回调构建/metadata 提升/monocle |
-| `references/code/backend/packages/harness/helix/runtime/journal.py` | 1810 | run 日志 + 历史 seed |
-| `references/code/backend/packages/harness/helix/runtime/events/catalog.py` | 121 | 冻结事件目录 |
-| `references/code/backend/packages/harness/helix/runtime/events/store/db.py` / `jsonl.py` / `memory.py` | 598/520/243 | 三后端 |
-| `references/code/backend/packages/harness/helix/runtime/events/{message_identity,message_seq}.py` | 60/52 | 消息指纹与序号 |
-| `references/code/backend/packages/harness/helix/runtime/assembly_evidence.py` | 63 | 装配证据 |
-| `references/code/backend/packages/harness/helix/config/tracing_config.py` + `run_events_config.py` | 212+42 | 配置 |
+| `references/code/tracing/factory.py` + `metadata.py` + `monocle.py` | 65+114+69 | 回调构建/metadata 提升/monocle |
+| `references/code/runtime/journal.py` | 1810 | run 日志 + 历史 seed |
+| `references/code/runtime/events/catalog.py` | 121 | 冻结事件目录 |
+| `references/code/runtime/events/store/db.py` / `jsonl.py` / `memory.py` | 598/520/243 | 三后端 |
+| `references/code/runtime/events/{message_identity,message_seq}.py` | 60/52 | 消息指纹与序号 |
+| `references/code/runtime/assembly_evidence.py` | 63 | 装配证据 |
+| `references/code/config/tracing_config.py` + `run_events_config.py` | 212+42 | 配置 |
 
 ## 反模式与陷阱
 

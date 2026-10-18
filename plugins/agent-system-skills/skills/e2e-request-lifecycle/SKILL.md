@@ -61,8 +61,8 @@ description: 一次 agent 请求的端到端全链路脊柱：nginx 入口 → G
 
 | 文件 | 行数 | 职责 |
 |---|---|---|
-| `references/code/backend/app/gateway/app.py` | 1467 | FastAPI 装配：lifespan（引擎/检查点/渠道/调度器启动）、中间件栈、路由挂载 |
-| `references/code/backend/langgraph.json` | — | `lead_agent: helix.agents:make_lead_agent` 图注册 |
+| `references/code/app/gateway/app.py` | 1467 | FastAPI 装配：lifespan（引擎/检查点/渠道/调度器启动）、中间件栈、路由挂载 |
+| `references/code/langgraph.json` | — | `lead_agent: helix.agents:make_lead_agent` 图注册 |
 | `references/code/contracts/thread_origin_contract.json` | 12 | run/thread 来源标记词表 |
 | `references/code/docker/nginx/nginx.conf` | 383 | 入口路由/SSE 缓冲关闭/大小限制 |
 
@@ -91,4 +91,4 @@ description: 一次 agent 请求的端到端全链路脊柱：nginx 入口 → G
 
 - [[gateway-runs-and-sse]]（④⑦ 的全部源码）、[[long-running-and-cancellation]]（租约/取消/恢复全量实现）
 - [[agent-graph-factory]]（⑤ 建图细节）、[[frontend-streaming-protocol]]（⑧ 消费端）
-- 深读：`references/code/backend/app/gateway/app.py` 的 lifespan 装配顺序
+- 深读：`references/code/app/gateway/app.py` 的 lifespan 装配顺序

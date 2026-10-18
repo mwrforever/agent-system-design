@@ -48,13 +48,13 @@ description: 模型接入层：create_chat_model 工厂（档案解析→use 类
 
 | 文件 | 行数 | 职责 |
 |---|---|---|
-| `references/code/backend/packages/harness/helix/models/factory.py` | 721 | 工厂 |
-| `references/code/backend/packages/harness/helix/models/reasoning.py` + `reasoning_capture.py` | 217+56 | 推理契约 |
-| `references/code/backend/packages/harness/helix/models/{claude_provider,openai_codex_provider,vllm_provider,mindie_provider}.py` | 445/530/328/418 | 四家自研层 |
-| `references/code/backend/packages/harness/helix/models/patched_{openai,deepseek,minimax,mimo,stepfun}.py` | 110/102/267/124/157 | 五家补丁 |
-| `references/code/backend/packages/harness/helix/models/{credential_loader,request_admission,assistant_payload_replay}.py` | 269/120/118 | 凭据/限速/回放还原 |
-| `references/code/backend/packages/harness/helix/config/{model_config,managed_models,managed_model_providers}.py` | 269/246/136 | 档案配置 |
-| `references/code/backend/app/gateway/routers/{models,managed_models}.py` | 226/182 | 模型 API |
+| `references/code/models/factory.py` | 721 | 工厂 |
+| `references/code/models/reasoning.py` + `reasoning_capture.py` | 217+56 | 推理契约 |
+| `references/code/models/{claude_provider,openai_codex_provider,vllm_provider,mindie_provider}.py` | 445/530/328/418 | 四家自研层 |
+| `references/code/models/patched_{openai,deepseek,minimax,mimo,stepfun}.py` | 110/102/267/124/157 | 五家补丁 |
+| `references/code/models/{credential_loader,request_admission,assistant_payload_replay}.py` | 269/120/118 | 凭据/限速/回放还原 |
+| `references/code/config/{model_config,managed_models,managed_model_providers}.py` | 269/246/136 | 档案配置 |
+| `references/code/app/gateway/routers/{models,managed_models}.py` | 226/182 | 模型 API |
 
 ## 反模式与陷阱
 

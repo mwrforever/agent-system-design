@@ -46,7 +46,7 @@ description: Gateway 认证全家桶：AuthMiddleware 统一入口、多源认�
 
 ## 实现索引
 
-`references/code/backend/app/gateway/`：
+`references/code/app/gateway/`：
 
 | 文件 | 行数 | 职责 |
 |---|---|---|

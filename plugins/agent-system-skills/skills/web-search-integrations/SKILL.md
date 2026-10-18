@@ -32,10 +32,10 @@ Tavily（API 搜索）、DuckDuckGo（免 key，目录 `ddg_search`）、Brave�
 
 | 文件 | 行数 | 职责 |
 |---|---|---|
-| `references/code/backend/packages/harness/helix/community/url_safety.py` | 234 | SSRF 防线 |
-| `references/code/backend/packages/harness/helix/community/provider_credentials.py` | — | 凭据集中管理 |
-| `references/code/backend/packages/harness/helix/community/search_max_results.py` | — | 条数收口 |
-| `references/code/backend/packages/harness/helix/community/{tavily,ddg_search,brave,serper,jina_ai,crawl4ai}/**` | — | 六家完整实现 |
+| `references/code/community/url_safety.py` | 234 | SSRF 防线 |
+| `references/code/community/provider_credentials.py` | — | 凭据集中管理 |
+| `references/code/community/search_max_results.py` | — | 条数收口 |
+| `references/code/community/{tavily,ddg_search,brave,serper,jina_ai,crawl4ai}/**` | — | 六家完整实现 |
 
 其余 provider 未随语料复制（同构模式，接法一致）。
 

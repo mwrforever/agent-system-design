@@ -62,7 +62,7 @@ redis（内部）  gateway（内部）  frontend（内部）  provisioner（可�
 | `references/code/docker/dev-entrypoint.sh` | — | 开发入口 |
 | `references/code/deploy/helm/**`（Chart/values/22 模板） | — | K8s 交付 |
 | `references/code/Makefile` + `backend/pyproject.toml` + `frontend/Dockerfile` | — | 构建 |
-| `references/code/backend/packages/harness/helix/config/deployment_config.py` | 107 | 多实例声明配置 |
+| `references/code/config/deployment_config.py` | 107 | 多实例声明配置 |
 
 ## 反模式与陷阱
 

@@ -41,15 +41,15 @@ threads.py（2057 行）：创建/搜索/移动/分支（branches）/标记已�
 
 | 文件 | 行数 | 职责 |
 |---|---|---|
-| `references/code/backend/app/gateway/app.py` | 1467 | 应用与 lifespan |
-| `references/code/backend/app/gateway/deps.py` | 1337 | 运行时单例装配 + 多 worker 门 |
-| `references/code/backend/app/gateway/services.py` | 2804 | 运行编排 + SSE 消费 + 信任边界 |
-| `references/code/backend/app/gateway/routers/thread_runs.py` | 1903 | runs 全端点 |
-| `references/code/backend/app/gateway/routers/threads.py` | 2057 | threads 全端点 |
-| `references/code/backend/app/gateway/routers/runs.py` | 150 | 无 thread 上下文的 runs 面 |
-| `references/code/backend/app/gateway/{run_models,health,sse_headers,langgraph_studio,conversation_access,conversation_reader}.py` | 178/418/28/185/326/191 | 模型/健康检查/SSE 头/Studio 兼容/会话访问 |
-| `references/code/backend/app/gateway/routers/{console,features,capabilities,thread_activity,suggestions,input_polish}.py` | 549/163/51/120/154/107 | 平台面路由 |
-| `references/code/backend/packages/harness/helix/runtime/{stream_modes,converters,serialization}.py` | 47/136/148 | 流模式/事件转换/序列化 |
+| `references/code/app/gateway/app.py` | 1467 | 应用与 lifespan |
+| `references/code/app/gateway/deps.py` | 1337 | 运行时单例装配 + 多 worker 门 |
+| `references/code/app/gateway/services.py` | 2804 | 运行编排 + SSE 消费 + 信任边界 |
+| `references/code/app/gateway/routers/thread_runs.py` | 1903 | runs 全端点 |
+| `references/code/app/gateway/routers/threads.py` | 2057 | threads 全端点 |
+| `references/code/app/gateway/routers/runs.py` | 150 | 无 thread 上下文的 runs 面 |
+| `references/code/app/gateway/{run_models,health,sse_headers,langgraph_studio,conversation_access,conversation_reader}.py` | 178/418/28/185/326/191 | 模型/健康检查/SSE 头/Studio 兼容/会话访问 |
+| `references/code/app/gateway/routers/{console,features,capabilities,thread_activity,suggestions,input_polish}.py` | 549/163/51/120/154/107 | 平台面路由 |
+| `references/code/runtime/{stream_modes,converters,serialization}.py` | 47/136/148 | 流模式/事件转换/序列化 |
 | `references/code/contracts/run_event_stream_contract.json` | 491 | 事件流冻结契约 |
 
 ## 反模式与陷阱

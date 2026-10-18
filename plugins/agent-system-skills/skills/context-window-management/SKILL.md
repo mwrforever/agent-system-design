@@ -40,15 +40,15 @@ SummarizationMiddleware 自建模型调用（`attach_tracing=False`，遵守挂�
 
 | 文件 | 行数 | 职责 |
 |---|---|---|
-| `references/code/backend/packages/harness/helix/agents/middlewares/summarization_middleware.py` | 1279 | 历史压缩中间件（阈值/保留策略/自建模型） |
-| `references/code/backend/packages/harness/helix/agents/middlewares/tool_output_budget_middleware.py` | 1277 | 工具输出预算 + 落盘替换 |
-| `references/code/backend/packages/harness/helix/agents/middlewares/tool_output_synopsis.py` | 651 | 预览摘要生成 |
-| `references/code/backend/packages/harness/helix/agents/middlewares/token_budget_middleware.py` | 388 | run 级预算三档 |
-| `references/code/backend/packages/harness/helix/runtime/context_compaction.py` | 244 | 手动紧缩 |
-| `references/code/backend/packages/harness/helix/config/summarization_config.py` | 124 | trigger/keep/trim_tokens |
-| `references/code/backend/packages/harness/helix/config/tool_output_config.py` | 121 | externalize/预览/豁免 |
-| `references/code/backend/packages/harness/helix/config/token_budget_config.py` | 21 | max/warn/hard_stop |
-| `references/code/backend/packages/harness/helix/config/token_usage_config.py` | 7 | 用量记账开关 |
+| `references/code/agents/middlewares/summarization_middleware.py` | 1279 | 历史压缩中间件（阈值/保留策略/自建模型） |
+| `references/code/agents/middlewares/tool_output_budget_middleware.py` | 1277 | 工具输出预算 + 落盘替换 |
+| `references/code/agents/middlewares/tool_output_synopsis.py` | 651 | 预览摘要生成 |
+| `references/code/agents/middlewares/token_budget_middleware.py` | 388 | run 级预算三档 |
+| `references/code/runtime/context_compaction.py` | 244 | 手动紧缩 |
+| `references/code/config/summarization_config.py` | 124 | trigger/keep/trim_tokens |
+| `references/code/config/tool_output_config.py` | 121 | externalize/预览/豁免 |
+| `references/code/config/token_budget_config.py` | 21 | max/warn/hard_stop |
+| `references/code/config/token_usage_config.py` | 7 | 用量记账开关 |
 
 ## 反模式与陷阱
 

@@ -49,15 +49,15 @@ description: 长运行 run 的生命周期管理：RunManager 状态机（create
 
 | 文件 | 行数 | 职责 |
 |---|---|---|
-| `references/code/backend/packages/harness/helix/runtime/runs/manager.py` | 2690 | RunManager 状态机 |
-| `references/code/backend/packages/harness/helix/runtime/runs/worker.py` | 3556 | run_agent 执行主体 |
-| `references/code/backend/packages/harness/helix/runtime/runs/{schemas,naming,stream_cleanup}.py` + `cancellation.py` | 32/16/111/63 | 状态/命名/清理/取消 |
-| `references/code/backend/packages/harness/helix/runtime/runs/store/{base,memory}.py` | 523+608 | run 存储契约 |
-| `references/code/backend/packages/harness/helix/runtime/stream_bridge/{base,memory,redis,async_provider}.py` | 127/192/432/102 | 流桥 |
-| `references/code/backend/packages/harness/helix/runtime/checkpointer/{provider,async_provider,cached_saver,thread_spans}.py` | 286/257/349/97 | 检查点 |
-| `references/code/backend/packages/harness/helix/runtime/checkpoint_cache/**` | ~416 | 历史缓存 |
-| `references/code/backend/packages/harness/helix/runtime/{checkpoint_mode,keyed_lock}.py` | 146/147 | 模式冻结/键锁 |
-| `references/code/backend/packages/harness/helix/config/{checkpointer,stream_bridge,run_ownership}_config.py` | 76/96/47 | 配置 |
+| `references/code/runtime/runs/manager.py` | 2690 | RunManager 状态机 |
+| `references/code/runtime/runs/worker.py` | 3556 | run_agent 执行主体 |
+| `references/code/runtime/runs/{schemas,naming,stream_cleanup}.py` + `cancellation.py` | 32/16/111/63 | 状态/命名/清理/取消 |
+| `references/code/runtime/runs/store/{base,memory}.py` | 523+608 | run 存储契约 |
+| `references/code/runtime/stream_bridge/{base,memory,redis,async_provider}.py` | 127/192/432/102 | 流桥 |
+| `references/code/runtime/checkpointer/{provider,async_provider,cached_saver,thread_spans}.py` | 286/257/349/97 | 检查点 |
+| `references/code/runtime/checkpoint_cache/**` | ~416 | 历史缓存 |
+| `references/code/runtime/{checkpoint_mode,keyed_lock}.py` | 146/147 | 模式冻结/键锁 |
+| `references/code/config/{checkpointer,stream_bridge,run_ownership}_config.py` | 76/96/47 | 配置 |
 
 ## 反模式与陷阱
 

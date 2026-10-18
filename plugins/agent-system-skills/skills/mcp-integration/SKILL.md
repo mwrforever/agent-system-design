@@ -60,7 +60,7 @@ per-user 配置文件（`user_config.py` 文件签名缓存）+ `requires_admin`
 | `backend/app/mcp_tasks/service.py` | 1566 | 租赁 worker（claim/poll/cancel/notify/死信） |
 | `backend/app/gateway/routers/mcp.py` / `personal_mcp.py` / `mcp_tasks.py` | 1731/—/218 | 配置与任务 API |
 
-（以上路径前缀 `references/code/backend/packages/harness/helix/`）
+（以上路径前缀 `references/code/`）
 
 ## 反模式与陷阱
 

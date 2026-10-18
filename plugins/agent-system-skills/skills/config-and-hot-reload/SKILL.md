@@ -43,12 +43,12 @@ description: 配置系统设计：AppConfig 单根（约 60 个子配置节）�
 
 | 文件 | 行数 | 职责 |
 |---|---|---|
-| `references/code/backend/packages/harness/helix/config/app_config.py` | 920 | 配置根 + 热重载 |
-| `references/code/backend/packages/harness/helix/config/extensions_config.py` | 1044 | HTTP 可写扩展配置 |
-| `references/code/backend/packages/harness/helix/config/shared_reset_marker.py` | 316 | 跨副本失效 |
-| `references/code/backend/packages/harness/helix/config/paths.py` | 556 | 路径派生（另见 [[multi-user-isolation]]） |
-| `references/code/backend/packages/harness/helix/config/reload_boundary.py` | 171 | 重启边界 |
-| `references/code/backend/packages/harness/helix/config/{secret_file,credentials_key,file_signature,plugin_settings,runtime_paths,_boolean_guards}.py` | — | 机密/签名/杂项 |
+| `references/code/config/app_config.py` | 920 | 配置根 + 热重载 |
+| `references/code/config/extensions_config.py` | 1044 | HTTP 可写扩展配置 |
+| `references/code/config/shared_reset_marker.py` | 316 | 跨副本失效 |
+| `references/code/config/paths.py` | 556 | 路径派生（另见 [[multi-user-isolation]]） |
+| `references/code/config/reload_boundary.py` | 171 | 重启边界 |
+| `references/code/config/{secret_file,credentials_key,file_signature,plugin_settings,runtime_paths,_boolean_guards}.py` | — | 机密/签名/杂项 |
 | `references/code/config.example.yaml` | 3607 | 全量配置样例（每个配置段的权威文档） |
 | `references/code/extensions_config.example.json` | 95 | MCP/技能/拦截器样例 |
 

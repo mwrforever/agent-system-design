@@ -41,18 +41,18 @@ agent 看到的永远是 `/mnt/user-data/{workspace,uploads,outputs}` 与 `/mnt/
 
 | 文件 | 行数 | 职责 |
 |---|---|---|
-| `references/code/backend/packages/harness/helix/sandbox/sandbox_provider.py` | 293 | Provider ABC + 双检锁单例 |
-| `references/code/backend/packages/harness/helix/sandbox/sandbox.py` | 267 | Sandbox ABC |
-| `references/code/backend/packages/harness/helix/sandbox/lease.py` | 801 | 租约管理 |
-| `references/code/backend/packages/harness/helix/sandbox/acquire_serialization.py` | 223 | acquire 全局串行化 |
-| `references/code/backend/packages/harness/helix/sandbox/middleware.py` | 673 | SandboxMiddleware（链上获取/网络审批） |
-| `references/code/backend/packages/harness/helix/sandbox/env_policy.py` | 120 | env 注入/屏蔽 |
-| `references/code/backend/packages/harness/helix/sandbox/path_patterns.py` | 153 | 输出路径掩码正则 |
-| `references/code/backend/packages/harness/helix/sandbox/local/local_sandbox.py` | 1135 | LocalSandbox + PathMapping |
-| `references/code/backend/packages/harness/helix/sandbox/local/local_sandbox_provider.py` | 607 | 线程挂载 + LRU 缓存 |
-| `references/code/backend/packages/harness/helix/community/aio_sandbox/aio_sandbox_provider.py` | 2934 | 生产 provider（所有权/孤儿/暖池/网络） |
-| `references/code/backend/packages/harness/helix/community/warm_pool_lifecycle.py` | 129 | 暖池混入 |
-| `references/code/backend/packages/harness/helix/config/sandbox_config.py` | 347 | provider 选择/超时/host-bash 开关 |
+| `references/code/sandbox/sandbox_provider.py` | 293 | Provider ABC + 双检锁单例 |
+| `references/code/sandbox/sandbox.py` | 267 | Sandbox ABC |
+| `references/code/sandbox/lease.py` | 801 | 租约管理 |
+| `references/code/sandbox/acquire_serialization.py` | 223 | acquire 全局串行化 |
+| `references/code/sandbox/middleware.py` | 673 | SandboxMiddleware（链上获取/网络审批） |
+| `references/code/sandbox/env_policy.py` | 120 | env 注入/屏蔽 |
+| `references/code/sandbox/path_patterns.py` | 153 | 输出路径掩码正则 |
+| `references/code/sandbox/local/local_sandbox.py` | 1135 | LocalSandbox + PathMapping |
+| `references/code/sandbox/local/local_sandbox_provider.py` | 607 | 线程挂载 + LRU 缓存 |
+| `references/code/community/aio_sandbox/aio_sandbox_provider.py` | 2934 | 生产 provider（所有权/孤儿/暖池/网络） |
+| `references/code/community/warm_pool_lifecycle.py` | 129 | 暖池混入 |
+| `references/code/config/sandbox_config.py` | 347 | provider 选择/超时/host-bash 开关 |
 | 其余（exceptions/identity/security/remote_*/download 等 14 个） | — | 辅助契约 |
 
 社区另有 boxlite / e2b / opensandbox / tenki 等 provider，模式同构（SKILL 不复制，按需读源仓库同目录）。

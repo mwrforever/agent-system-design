@@ -41,7 +41,7 @@ description: Agent 记忆系统：MemoryManager 统一门面（检索/写入/判
 
 ## 实现索引
 
-`references/code/backend/packages/harness/helix/agents/memory/` 整目录（62 文件）：
+`references/code/agents/memory/` 整目录（62 文件）：
 
 | 关键文件 | 行数 | 职责 |
 |---|---|---|

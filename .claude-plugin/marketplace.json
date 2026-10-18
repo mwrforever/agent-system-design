@@ -12,7 +12,7 @@
       "name": "agent-system-skills",
       "source": "./plugins/agent-system-skills",
       "description": "Agent 系统设计技能集，共 33 个 skill：1 个元路由入口（using-agent-system-design）+ 1 个端到端请求全链路脊柱（e2e-request-lifecycle）+ 31 个领域 skill（图工厂/中间件链/ThreadState/提示词/上下文治理、工具装配/沙箱、子代理/长运行、技能/记忆/MCP、知识检索、模型工厂、认证/护栏/多用户隔离/配置热重载/可观测、网关 SSE/IM 渠道/定时任务、扩展插件/持久层/工作区/搜索集成、前端应用与流式协议、打包部署与边界）。references 为真实源码逐字复制（机械匿名化）",
-      "version": "1.3.0",
+      "version": "1.3.1",
       "category": "agent-development",
       "tags": [
         "agent",

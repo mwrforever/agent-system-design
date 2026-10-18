@@ -37,7 +37,7 @@ description: 沙箱内文件与命令工具的全套实现（3144 行单文件�
 
 | 文件 | 行数 | 职责 |
 |---|---|---|
-| `references/code/backend/packages/harness/helix/sandbox/tools.py` | 3144 | 七工具 + 三面安全体系（唯一权威文件） |
+| `references/code/sandbox/tools.py` | 3144 | 七工具 + 三面安全体系（唯一权威文件） |
 
 配套契约：`sandbox/read_file_contract.py` 在 [[sandbox-abstraction]] 的目录里。
 

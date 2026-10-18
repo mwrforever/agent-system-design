@@ -34,8 +34,23 @@
 
 ## 3. 逐字复制铁律
 
-- `references/code/` 下的每个文件 = **一个真实源文件**的逐字复制（含全部注释、docstring、空行），路径为**真实仓库相对路径**（品牌词替换后），如：
-  `references/code/backend/packages/harness/helix/agents/lead_agent/agent.py.md`
+- `references/code/` 下的每个文件 = **一个真实源文件**的逐字复制（含全部注释、docstring、空行），路径 = 源仓库相对路径（品牌词替换后）再经**压缩映射**，如源 `backend/packages/harness/helix/agents/lead_agent/agent.py` → `references/code/agents/lead_agent/agent.py.md`。
+- 压缩映射表（链式应用），动机：Windows MAX_PATH=260——市场缓存前缀（`C:/Users/<name>/.claude/plugins/marketplaces/<mkt>/`）约 83-100 字符，仓库内路径必须留余量：
+
+| 源路径前缀 | 映射为 |
+|---|---|
+| `backend/packages/harness/helix/` | （剥离，框架包根即 code 根） |
+| `backend/packages/extension-api/helix_extension_api/` | `extension-api/` |
+| `backend/packages/harness/pyproject.toml` | `pyproject.harness.toml` |
+| `backend/docs/` | `docs-backend/` |
+| `backend/app/` | `app/` |
+| `backend/tests/` | `tests/` |
+| `backend/pyproject.toml` | `pyproject.backend.toml` |
+| `backend/`（其余，如 AGENTS.md / langgraph.json） | （剥离） |
+| `frontend/src/` | `frontend/` |
+| `agents/memory/backends/helixmem/helixmem/` | `agents/memory/backends/helixmem/pkg/`（同名双层折叠，防碰撞） |
+
+> 硬约束：仓库内任意文件完整路径 ≤ 160 字符（实测最长 151）。
 - **禁止**：手工转述、删减截断、增补注释、"适配结构"、重命名目录层级。发现引用与源不符即为缺陷。
 - 复制由**仓库外的生成脚本**批量完成（脚本含源品牌词，不得进入本仓库）。人工只维护 SKILL.md 与清单文件。
 - `.md` 源文件（架构文档、AGENTS.md）直接内嵌；代码/配置文件包一层代码围栏并附路径头。
@@ -43,7 +58,7 @@
 ## 4. 单向依赖结构（引用真实架构，不得虚构）
 
 ```
-backend/packages/harness/helix/   ← 第1层：可发布 agent 框架（import 前缀 helix.*）
+   ← 第1层：可发布 agent 框架（import 前缀 helix.*）
 backend/packages/extension-api/helix_extension_api/  ← 扩展契约包（禁止 import helix）
 backend/app/                      ← 第2层：应用层（gateway / channels / scheduler / mcp_tasks / subagent_batches）
 frontend/                         ← 第3层：Next.js（经 HTTP/SSE 调第2层）

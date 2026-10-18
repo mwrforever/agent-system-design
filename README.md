@@ -75,7 +75,7 @@ codex plugin add agent-system-skills@agent-system-skills
 
 ## 包含的插件
 
-### `agent-system-skills` (v1.3.0)
+### `agent-system-skills` (v1.3.1)
 
 **33 个 skill**，references 含 **988 个源码文件的逐字复制（约 26.2 万行）**——完整复刻一个生产级 super-agent 平台的全部能力面，仅做品牌词机械匿名化（见 `CONVENTIONS.md`）。
 
@@ -95,7 +95,7 @@ codex plugin add agent-system-skills@agent-system-skills
 
 - Claude Code 会扫描 `plugins/agent-system-skills/skills/*/SKILL.md` 注册技能；zcode 按 `.zcode-plugin` > `.claude-plugin` > `.codex-plugin` 优先级读取清单；Codex 通过插件清单的 `skills: "./skills"` 声明注册；Kimi Code 通过 `kimi.plugin.json` 的 `skills` 字段注册；opencode 通过 `skills.paths` 扫描注册。
 - 当用户提到「设计 agent 系统 / 中间件链 / 沙箱 / RAG …」时，AI **必须先调用** `using-agent-system-design`，再按指引激活具体领域 skill。
-- 每个 SKILL.md 保持轻量（100-300 行，硬上限 500）：设计决策（只断言源码可佐证的事实）+ 实现索引 + 反模式 + 落地参考；完整源码逐字复制在各 skill 的 `references/code/` 下（路径即真实仓库相对路径）。
+- 每个 SKILL.md 保持轻量（100-300 行，硬上限 500）：设计决策（只断言源码可佐证的事实）+ 实现索引 + 反模式 + 落地参考；完整源码逐字复制在各 skill 的 `references/code/` 下（路径为源仓库相对路径经压缩映射，兼容 Windows 260 字符路径上限）。
 
 ## 目录结构
 

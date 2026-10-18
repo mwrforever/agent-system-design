@@ -71,7 +71,7 @@ description: Agent 系统设计技能集的元路由入口。当用户要设计/
 | 文件 | 行数 | 说明 |
 |---|---|---|
 | `references/code/docs/ARCHITECTURE.md` | 197 | 顶层架构总览：服务拓扑/分层/横切子系统/安全模型 |
-| `references/code/backend/docs/ARCHITECTURE.md` | 504 | 后端深度：组件清单/装配链/测试策略 |
+| `references/code/docs-backend/ARCHITECTURE.md` | 504 | 后端深度：组件清单/装配链/测试策略 |
 
 从任一 skill 进入后，其"实现索引"段给出该域全部源码文件（真实路径 + 行数），源码逐字复制于 `references/code/`。
 

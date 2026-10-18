@@ -81,7 +81,7 @@ SDK 链（`create_helix_agent` 用，18 项）是其子集：ThreadData → Uplo
 
 ## 实现索引
 
-`references/code/backend/packages/harness/helix/agents/middlewares/` 下 **49 个文件、14382 行**（整目录逐字复制，仅排除归属其他 skill 的 11 个：summarization/token_budget/tool_output_budget/tool_output_synopsis → [[context-window-management]]；skill_activation/skill_tool_policy/skill_context → [[skill-system-design]]；memory → [[memory-system-design]]；pii_redaction/input_sanitization/read_before_write → [[safety-and-guardrails]]；SandboxMiddleware 本体在 [[sandbox-abstraction]]）。
+`references/code/agents/middlewares/` 下 **49 个文件、14382 行**（整目录逐字复制，仅排除归属其他 skill 的 11 个：summarization/token_budget/tool_output_budget/tool_output_synopsis → [[context-window-management]]；skill_activation/skill_tool_policy/skill_context → [[skill-system-design]]；memory → [[memory-system-design]]；pii_redaction/input_sanitization/read_before_write → [[safety-and-guardrails]]；SandboxMiddleware 本体在 [[sandbox-abstraction]]）。
 
 | 关键文件 | 行数 | 为什么关键 |
 |---|---|---|

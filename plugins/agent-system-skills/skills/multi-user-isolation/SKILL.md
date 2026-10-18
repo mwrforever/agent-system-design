@@ -51,10 +51,10 @@ description: 多用户数据隔离链路：user_context contextvar 身份传播�
 
 | 文件 | 行数 | 职责 |
 |---|---|---|
-| `references/code/backend/packages/harness/helix/runtime/user_context.py` | 295 | 身份传播与三源归一 |
-| `references/code/backend/packages/harness/helix/runtime/secret_context.py` | 248 | 密钥提取/脱敏/owner-token 隔离 |
-| `references/code/backend/packages/harness/helix/runtime/run_origin.py` | 80 | 来源标记 |
-| `references/code/backend/packages/harness/helix/config/paths.py` | 556 | 路径派生 + id 校验 + 分桶 |
+| `references/code/runtime/user_context.py` | 295 | 身份传播与三源归一 |
+| `references/code/runtime/secret_context.py` | 248 | 密钥提取/脱敏/owner-token 隔离 |
+| `references/code/runtime/run_origin.py` | 80 | 来源标记 |
+| `references/code/config/paths.py` | 556 | 路径派生 + id 校验 + 分桶 |
 | `references/code/contracts/thread_origin_contract.json` | 12 | 来源词表 |
 
 分桶消费方：[[skill-system-design]]（user 技能）、[[memory-system-design]]（owner 记忆）、[[mcp-integration]]（个人 MCP）、[[sandbox-abstraction]]（沙箱归属）。

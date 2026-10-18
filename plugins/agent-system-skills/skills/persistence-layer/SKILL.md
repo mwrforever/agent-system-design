@@ -43,7 +43,7 @@ description: SQL 持久层设计：SQLAlchemy 2.0 async 引擎引导（自动建
 
 ## 实现索引
 
-`references/code/backend/packages/harness/helix/persistence/`（73 文件 1.2 万行）：`base/engine/bootstrap/json_compat/postgres_schema` + `models/` + 18 个域目录 + `migrations/{env,_env_filters,_helpers}.py`。配置：`config/database_config.py`（340 行，sqlite/postgres/channel dedupe 表/checkpoint 模式/delta 缓存）+ `config/postgres_schema.py`。
+`references/code/persistence/`（73 文件 1.2 万行）：`base/engine/bootstrap/json_compat/postgres_schema` + `models/` + 18 个域目录 + `migrations/{env,_env_filters,_helpers}.py`。配置：`config/database_config.py`（340 行，sqlite/postgres/channel dedupe 表/checkpoint 模式/delta 缓存）+ `config/postgres_schema.py`。
 
 ## 反模式与陷阱
 

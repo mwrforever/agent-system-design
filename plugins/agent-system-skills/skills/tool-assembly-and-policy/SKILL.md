@@ -53,23 +53,23 @@ get_available_tools() → filter_tools_by_skill_allowed_tools（技能白名单�
 
 | 文件 | 行数 | 职责 |
 |---|---|---|
-| `references/code/backend/packages/harness/helix/tools/tools.py` | 353 | 装配入口（六源合并/去重/预算注记/host-bash 剥离） |
-| `references/code/backend/packages/harness/helix/tools/builtins/tool_search.py` | 444 | 延迟目录/评分/catalog 提示段/路由中间件工厂 |
-| `references/code/backend/packages/harness/helix/tools/tool_provenance.py` | 218 | 来源溯源 |
-| `references/code/backend/packages/harness/helix/tools/artifact_registry.py` | 452 | 产物句柄登记与渲染 |
-| `references/code/backend/packages/harness/helix/tools/mcp_metadata.py` | 80 | MCP 打标 |
-| `references/code/backend/packages/harness/helix/tools/sync.py` | 108 | async 工具同步包装 |
-| `references/code/backend/packages/harness/helix/tools/conversation.py` | 77 | 会话读取工具 |
-| `references/code/backend/packages/harness/helix/tools/resource_placeholder.py` | 73 | 资源占位符（防 URL 泄漏） |
-| `references/code/backend/packages/harness/helix/tools/builtins/clarification_tool.py` | 94 | ask_clarification |
-| `references/code/backend/packages/harness/helix/tools/builtins/present_file_tool.py` | 121 | present_files |
-| `references/code/backend/packages/harness/helix/tools/builtins/view_image_tool.py` | 356 | view_image |
-| `references/code/backend/packages/harness/helix/tools/builtins/list_uploaded_files_tool.py` | 353 | 上传清单 |
-| `references/code/backend/packages/harness/helix/tools/builtins/background_tasks_tool.py` | 91 | 后台任务查询 |
-| `references/code/backend/packages/harness/helix/tools/builtins/invoke_acp_agent_tool.py` | 344 | ACP 外部 agent 调用 |
-| `references/code/backend/packages/harness/helix/reflection/resolvers.py` | 95 | use: 字符串反射加载 |
-| `references/code/backend/packages/harness/helix/config/tool_search_config.py` | 52 | 延迟加载开关 |
-| `references/code/backend/packages/harness/helix/config/tool_config.py` | 20 / `tool_artifact_config.py` | 38 | 工具/产物配置 |
+| `references/code/tools/tools.py` | 353 | 装配入口（六源合并/去重/预算注记/host-bash 剥离） |
+| `references/code/tools/builtins/tool_search.py` | 444 | 延迟目录/评分/catalog 提示段/路由中间件工厂 |
+| `references/code/tools/tool_provenance.py` | 218 | 来源溯源 |
+| `references/code/tools/artifact_registry.py` | 452 | 产物句柄登记与渲染 |
+| `references/code/tools/mcp_metadata.py` | 80 | MCP 打标 |
+| `references/code/tools/sync.py` | 108 | async 工具同步包装 |
+| `references/code/tools/conversation.py` | 77 | 会话读取工具 |
+| `references/code/tools/resource_placeholder.py` | 73 | 资源占位符（防 URL 泄漏） |
+| `references/code/tools/builtins/clarification_tool.py` | 94 | ask_clarification |
+| `references/code/tools/builtins/present_file_tool.py` | 121 | present_files |
+| `references/code/tools/builtins/view_image_tool.py` | 356 | view_image |
+| `references/code/tools/builtins/list_uploaded_files_tool.py` | 353 | 上传清单 |
+| `references/code/tools/builtins/background_tasks_tool.py` | 91 | 后台任务查询 |
+| `references/code/tools/builtins/invoke_acp_agent_tool.py` | 344 | ACP 外部 agent 调用 |
+| `references/code/reflection/resolvers.py` | 95 | use: 字符串反射加载 |
+| `references/code/config/tool_search_config.py` | 52 | 延迟加载开关 |
+| `references/code/config/tool_config.py` | 20 / `tool_artifact_config.py` | 38 | 工具/产物配置 |
 
 bash/read/write/str_replace/ls/glob/grep 的**实现体**在 [[sandbox-tools-and-safety]]；task 在 [[subagent-delegation]]；skill_manage / review_skill_package 在 [[skill-system-design]]；scheduled_tasks 在 [[scheduled-tasks]]。
 

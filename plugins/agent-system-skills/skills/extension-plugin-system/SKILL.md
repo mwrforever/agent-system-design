@@ -45,12 +45,12 @@ example（入门全贡献面）/ bookmarks（全栈：浏览器页+动作+资产
 
 | 文件 | 行数 | 职责 |
 |---|---|---|
-| `references/code/backend/packages/extension-api/helix_extension_api/__init__.py` + `contracts.py` | 188+258 | 契约索引 + 核心类型 |
-| `references/code/backend/packages/extension-api/helix_extension_api/{agent_runs,assembly,plugins,run_evidence,auth,release,provenance,model_invocation,placement,compaction,settings,state}.py` | — | 各贡献面契约 |
-| `references/code/backend/packages/harness/helix/extensions/manager.py` | 1138 | 宿主管理器 |
-| `references/code/backend/packages/harness/helix/extensions/{loader,registry,stack,anchors,isolation,gateway,plugin_tools,notify,model_invocation,ordering,browser_assets,injection,run_evidence,model_access}.py` | 282/271/191/120/380/654/144/548/263/127/112/139/168/94 | 宿主侧全家桶 |
+| `references/code/extension-api/__init__.py` + `contracts.py` | 188+258 | 契约索引 + 核心类型 |
+| `references/code/extension-api/{agent_runs,assembly,plugins,run_evidence,auth,release,provenance,model_invocation,placement,compaction,settings,state}.py` | — | 各贡献面契约 |
+| `references/code/extensions/manager.py` | 1138 | 宿主管理器 |
+| `references/code/extensions/{loader,registry,stack,anchors,isolation,gateway,plugin_tools,notify,model_invocation,ordering,browser_assets,injection,run_evidence,model_access}.py` | 282/271/191/120/380/654/144/548/263/127/112/139/168/94 | 宿主侧全家桶 |
 | `references/code/examples/**`（9 示例 + README） | ~4700 | 官方模式样例 |
-| `references/code/backend/app/gateway/routers/plugins.py` | 158 | 插件资产/动作服务 |
+| `references/code/app/gateway/routers/plugins.py` | 158 | 插件资产/动作服务 |
 
 ## 反模式与陷阱
 

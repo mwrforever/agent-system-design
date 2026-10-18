@@ -45,7 +45,7 @@ description: 子代理委派体系：task 工具与 SubagentExecutor（持久隔
 
 ## 实现索引
 
-`references/code/backend/packages/harness/helix/subagents/`（整目录 31 文件）+ 工具/路由/契约：
+`references/code/subagents/`（整目录 31 文件）+ 工具/路由/契约：
 
 | 关键文件 | 行数 | 职责 |
 |---|---|---|

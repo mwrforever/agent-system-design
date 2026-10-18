@@ -44,7 +44,7 @@ description: Agent 技能系统全套：SKILL.md 解析与 frontmatter 校验（
 
 ## 实现索引
 
-`references/code/backend/packages/harness/helix/skills/` 整目录（50 文件）+ 中间件/工具/契约（路径前缀同上）：
+`references/code/skills/` 整目录（50 文件）+ 中间件/工具/契约（路径前缀同上）：
 
 | 关键文件 | 行数 | 职责 |
 |---|---|---|

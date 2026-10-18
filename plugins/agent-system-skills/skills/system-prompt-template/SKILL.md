@@ -42,7 +42,7 @@ SOUL.md、技能 frontmatter（name/description）、子代理 description 都�
 
 | 文件 | 行数 | 职责 |
 |---|---|---|
-| `references/code/backend/packages/harness/helix/agents/lead_agent/prompt.py` | 1270 | 全部：模板、apply_prompt_template 渲染入口、三层缓存、转义、子代理段 |
+| `references/code/agents/lead_agent/prompt.py` | 1270 | 全部：模板、apply_prompt_template 渲染入口、三层缓存、转义、子代理段 |
 
 唯一权威文件，一次读全。
 

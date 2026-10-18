@@ -34,14 +34,14 @@ description: 框架/应用边界与直连消费方：harness↔app 单向依赖�
 
 | 文件 | 行数 | 职责 |
 |---|---|---|
-| `references/code/backend/tests/test_harness_boundary.py` | — | 边界 CI 强制 |
-| `references/code/backend/AGENTS.md` | 361 | 后端工程契约（命令/TDD/边界/重载） |
-| `references/code/backend/packages/harness/pyproject.toml` | — | 框架包发布配置 |
-| `references/code/backend/packages/harness/helix/client.py` | 1989 | 嵌入式客户端 |
-| `references/code/backend/packages/harness/helix/tui/app.py` | 890 | Textual 应用 |
-| `references/code/backend/packages/harness/helix/tui/cli.py` | 412 | 三模式入口 |
-| `references/code/backend/packages/harness/helix/tui/view_state.py` | 390 | reducer |
-| `references/code/backend/packages/harness/helix/tui/{runtime,session,command_registry,render,persistence,message_format,input_history,theme,widgets/composer}.py` | 130/103/132/152/111/108/58/42/64 | 配套 |
+| `references/code/tests/test_harness_boundary.py` | — | 边界 CI 强制 |
+| `references/code/AGENTS.md` | 361 | 后端工程契约（命令/TDD/边界/重载） |
+| `references/code/pyproject.harness.toml` | — | 框架包发布配置 |
+| `references/code/client.py` | 1989 | 嵌入式客户端 |
+| `references/code/tui/app.py` | 890 | Textual 应用 |
+| `references/code/tui/cli.py` | 412 | 三模式入口 |
+| `references/code/tui/view_state.py` | 390 | reducer |
+| `references/code/tui/{runtime,session,command_registry,render,persistence,message_format,input_history,theme,widgets/composer}.py` | 130/103/132/152/111/108/58/42/64 | 配套 |
 
 ## 反模式与陷阱
 
